@@ -103,7 +103,7 @@ export default function Hero() {
                 <Button className="w-full sm:w-auto text-lg px-8 py-3 bg-blue-600 hover:bg-blue-700">
                   Get Started
                 </Button>
-                <Button variant="outline" className="w-full sm:w-auto text-lg px-8 py-3">
+                <Button variant="outline" className="w-full sm:w-auto text-lg text-black px-8 py-3">
                   View Documentation
                 </Button>
               </div>
