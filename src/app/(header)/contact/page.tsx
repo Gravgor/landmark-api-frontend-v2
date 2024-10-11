@@ -55,31 +55,6 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <header className="bg-black/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center space-x-2">
-              <MapPin className="h-8 w-8 text-blue-500" />
-              <span className="font-bold text-xl">Landmark API</span>
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              {['Home', 'Docs', 'Pricing'].map((item) => (
-                <Link
-                  key={item}
-                  href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-                  className="text-sm font-medium hover:text-blue-400 transition-colors"
-                >
-                  {item}
-                </Link>
-              ))}
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Button className='bg-white text-black'>Log In</Button>
-              <Button className="bg-blue-600 hover:bg-blue-700">Sign Up</Button>
-            </div>
-          </div>
-        </div>
-      </header>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold mb-8 text-center">Contact Us</h1>
