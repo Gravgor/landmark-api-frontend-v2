@@ -17,6 +17,7 @@ export default function DocsPage() {
     { id: "endpoints", label: "Endpoints" },
     { id: "examples", label: "Examples" },
     { id: "errors", label: "Error Handling" },
+    { id: "wrappers", label: "API Wrappers" },
   ]
 
   return (
@@ -51,7 +52,7 @@ export default function DocsPage() {
         <h1 className="text-4xl font-bold mb-8">Landmark API Documentation</h1>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="bg-gray-800 p-1 rounded-lg">
+          <TabsList className="bg-gray-800 p-1 rounded-lg flex flex-wrap">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
@@ -90,6 +91,34 @@ curl -X GET "https://api.landmarkapi.com/v1/landmarks?country=France&limit=5" \\
               <pre className="bg-black p-4 rounded text-sm overflow-x-auto">
                 <code>{`
 Authorization: Bearer YOUR_API_KEY
+X-API-Key: YOUR_API_KEY
+                `}</code>
+              </pre>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">Register a new user</h3>
+              <pre className="bg-gray-800 p-4 rounded text-sm overflow-x-auto">
+                <code>{`
+POST /auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword",
+  "name": "John Doe"
+}
+                `}</code>
+              </pre>
+              <h3 className="text-xl font-semibold">Login</h3>
+              <pre className="bg-gray-800 p-4 rounded text-sm overflow-x-auto">
+                <code>{`
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
                 `}</code>
               </pre>
             </div>
@@ -103,22 +132,36 @@ Authorization: Bearer YOUR_API_KEY
             <h2 className="text-2xl font-semibold">API Endpoints</h2>
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl font-semibold">GET /v1/landmarks</h3>
+                <h3 className="text-xl font-semibold">GET /api/v1/landmarks</h3>
                 <p>Retrieve a list of landmarks.</p>
                 <h4 className="text-lg font-semibold mt-2">Query Parameters:</h4>
                 <ul className="list-disc list-inside">
-                  <li>country (optional): Filter landmarks by country</li>
-                  <li>limit (optional): Limit the number of results (default: 10, max: 100)</li>
-                  <li>offset (optional): Offset for pagination (default: 0)</li>
+                  <li>limit (default: 10)</li>
+                  <li>offset (default: 0)</li>
+                  <li>sort (e.g., "-name" for descending order)</li>
+                  <li>fields (comma-separated list of fields)</li>
+                  <li>Additional filters as query parameters</li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-xl font-semibold">GET /v1/landmarks/{'{id}'}</h3>
+                <h3 className="text-xl font-semibold">GET /api/v1/landmarks/{'{id}'}</h3>
                 <p>Retrieve details for a specific landmark.</p>
               </div>
               <div>
-                <h3 className="text-xl font-semibold">GET /v1/countries</h3>
-                <p>Retrieve a list of countries with available landmark data.</p>
+                <h3 className="text-xl font-semibold">GET /api/v1/landmarks/country/{'{country}'}</h3>
+                <p>Retrieve landmarks for a specific country.</p>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold">GET /api/v1/landmarks/name/{'{name}'}</h3>
+                <p>Search landmarks by name.</p>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold">GET /api/v1/landmarks/category/{'{category}'}</h3>
+                <p>Search landmarks by category.</p>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold">POST /api/v1/landmarks/search</h3>
+                <p>Search landmarks by coordinates.</p>
               </div>
             </div>
           </TabsContent>
@@ -130,7 +173,9 @@ Authorization: Bearer YOUR_API_KEY
                 <h3 className="text-xl font-semibold">Example: Get landmarks in France</h3>
                 <pre className="bg-gray-800 p-4 rounded-lg text-sm overflow-x-auto mt-2">
                   <code>{`
-GET /v1/landmarks?country=France&limit=2
+GET /api/v1/landmarks?country=France&limit=5
+Authorization: Bearer <your_jwt_token>
+X-API-Key: <your_api_key>
 
 Response:
 {
@@ -138,54 +183,17 @@ Response:
     {
       "id": "eiffel-tower",
       "name": "Eiffel Tower",
-      "country": "France",
-      "city": "Paris",
-      "coordinates": {
-        "latitude": 48.8584,
-        "longitude": 2.2945
+      "location": {
+        "lat": 48.8584,
+        "lon": 2.2945
       },
-      "description": "Iconic iron lattice tower on the Champ de Mars in Paris."
+      "description": "Iconic iron lattice tower on the Champ de Mars in Paris"
     },
-    {
-      "id": "louvre-museum",
-      "name": "Louvre Museum",
-      "country": "France",
-      "city": "Paris",
-      "coordinates": {
-        "latitude": 48.8606,
-        "longitude": 2.3376
-      },
-      "description": "World's largest art museum and a historic monument in Paris."
-    }
+    // ... more landmarks
   ],
   "total": 1384,
-  "limit": 2,
-  "offset": 0
-}
-                  `}</code>
-                </pre>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold">Example: Get details for a specific landmark</h3>
-                <pre className="bg-gray-800 p-4 rounded-lg text-sm overflow-x-auto mt-2">
-                  <code>{`
-GET /v1/landmarks/eiffel-tower
-
-Response:
-{
-  "id": "eiffel-tower",
-  "name": "Eiffel Tower",
-  "country": "France",
-  "city": "Paris",
-  "coordinates": {
-    "latitude": 48.8584,
-    "longitude": 2.2945
-  },
-  "description": "Iconic iron lattice tower on the Champ de Mars in Paris.",
-  "height": 324,
-  "built": 1889,
-  "architect": "Gustave Eiffel",
-  "visitorsPerYear": 7000000
+  "page": 1,
+  "limit": 5
 }
                   `}</code>
                 </pre>
@@ -235,10 +243,93 @@ Response:
               </tbody>
             </table>
           </TabsContent>
+
+          <TabsContent value="subscription" className="space-y-6">
+            <h2 className="text-2xl font-semibold">Subscription Tiers</h2>
+            <table className="w-full border-collapse border border-gray-700">
+              <thead>
+                <tr className="bg-gray-800">
+                  <th className="p-2 text-left">Feature</th>
+                  <th className="p-2 text-center">Free Plan</th>
+                  <th className="p-2 text-center">Pro Plan</th>
+                  <th className="p-2 text-center">Enterprise Plan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="p-2 border-t border-gray-700">Basic landmark info</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                </tr>
+                <tr>
+                  <td className="p-2 border-t border-gray-700">Detailed descriptions</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✗</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                </tr>
+                <tr>
+                  <td className="p-2 border-t border-gray-700">Historical significance</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✗</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                </tr>
+                <tr>
+                  <td className="p-2 border-t border-gray-700">Visitor tips</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✗</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                </tr>
+                <tr>
+                  <td className="p-2 border-t border-gray-700">Real-time data</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✗</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✗</td>
+                  <td className="p-2 border-t border-gray-700 text-center">✓</td>
+                </tr>
+                <tr>
+                  <td className="p-2 border-t border-gray-700">Rate limit</td>
+                  <td className="p-2 border-t border-gray-700 text-center">100/hour</td>
+                  <td className="p-2 border-t border-gray-700 text-center">1000/hour</td>
+                  
+                  <td className="p-2 border-t border-gray-700 text-center">Unlimited</td>
+                </tr>
+              </tbody>
+            </table>
+          </TabsContent>
+
+          <TabsContent value="wrappers" className="space-y-6">
+            <h2 className="text-2xl font-semibold">API Wrappers</h2>
+            <p>We provide official wrappers for various programming languages to make it easier to integrate with our API:</p>
+            <ul className="list-disc list-inside space-y-2">
+              <li>JavaScript/TypeScript: <a href="#" className="text-blue-400 hover:underline">npm package</a></li>
+              <li>Python: <a href="#" className="text-blue-400 hover:underline">PyPI package</a></li>
+              <li>Ruby: <a href="#" className="text-blue-400 hover:underline">RubyGems package</a></li>
+              <li>PHP: <a href="#" className="text-blue-400 hover:underline">Composer package</a></li>
+            </ul>
+            <div className="bg-gray-800 p-4 rounded-lg mt-4">
+              <h3 className="text-lg font-semibold mb-2">Example usage (JavaScript)</h3>
+              <pre className="bg-black p-4 rounded text-sm overflow-x-auto">
+                <code>{`
+import { LandmarkAPI } from 'landmark-api';
+
+const api = new LandmarkAPI('YOUR_API_KEY');
+
+async function getLandmarks() {
+  try {
+    const landmarks = await api.getLandmarks({ country: 'France', limit: 5 });
+    console.log(landmarks);
+  } catch (error) {
+    console.error('Error fetching landmarks:', error);
+  }
+}
+
+getLandmarks();
+                `}</code>
+              </pre>
+            </div>
+          </TabsContent>
         </Tabs>
       </main>
-
-      
     </div>
   )
 }
