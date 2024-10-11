@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { DashboardSkeleton } from '../ui/dashboard-skeleton'
+import { DashboardSkeleton } from '../dashboard/dashboard-skeleton'
 
 interface AuthContextType {
   isAuthenticated: boolean

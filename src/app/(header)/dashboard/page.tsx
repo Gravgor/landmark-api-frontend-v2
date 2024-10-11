@@ -18,11 +18,16 @@ import { Input } from '@/components/ui/input'
 import { useAuth } from '@/hooks/use-auth'
 import { useUser } from '@/components/providers/UserProvider'
 import { useApiUsage } from '@/hooks/use-api-usage'
+import { useApiAdventures } from '@/hooks/use-api-adventures'
+import ApiUsageChart from '@/components/api-usage-chart'
+import DashboardAdventures from '@/components/dashboard/dashboard-adventures'
 
 export default function Dashboard() {
   const { isAuthenticated, checkAccess, logout } = useAuth()
   const { userData } = useUser()
   const { apiUsage, loading, error } = useApiUsage(30000)
+  const { adventures, loading: adventuresLoading, error: adventuresError } = useApiAdventures(30000) // Fetch every 30 seconds
+
 
 
   useEffect(() => {
@@ -80,55 +85,28 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DashboardAdventures 
+            adventures={adventures} 
+            loading={adventuresLoading} 
+            error={adventuresError} 
+          />
           <motion.div 
-            className="bg-gray-900 rounded-lg p-6 shadow-xl border border-blue-500/20"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <h2 className="text-2xl font-semibold mb-4">Recent API Adventures 🚀</h2>
-            <div className="space-y-4">
-              {[
-                { endpoint: '/landmarks/nearby', status: 'Success', time: '2 minutes ago', message: 'Found 5 landmarks near the Eiffel Tower' },
-                { endpoint: '/landmarks/search', status: 'Success', time: '15 minutes ago', message: 'Searched for "ancient ruins" in Greece' },
-                { endpoint: '/landmarks/details', status: 'Error', time: '1 hour ago', message: 'Oops! Landmark ID not found' },
-                { endpoint: '/landmarks/popular', status: 'Success', time: '3 hours ago', message: 'Retrieved top 10 landmarks in Japan' },
-              ].map((call, index) => (
-                <motion.div 
-                  key={index} 
-                  className="flex items-center justify-between bg-gray-800 p-3 rounded-lg"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <div>
-                    <p className="font-medium">{call.endpoint}</p>
-                    <p className="text-sm text-gray-400">{call.time}</p>
-                    <p className="text-xs text-gray-500 mt-1">{call.message}</p>
-                  </div>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    call.status === 'Success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
-                  }`}>
-                    {call.status}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-          <motion.div 
-            className="bg-gray-900 rounded-lg p-6 shadow-xl border border-blue-500/20"
+            className="bg-gray-900 rounded-lg shadow-xl border border-blue-500/20"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <h2 className="text-2xl font-semibold mb-4">Your API Journey 📈</h2>
-            <div className="h-64 flex items-center justify-center text-gray-500">
-              [Imagine an awesome, interactive chart here showing your API usage over time!]
-            </div>
+            {adventuresLoading ? (
+              <p className="p-6">Loading API usage data...</p>
+            ) : adventuresError ? (
+              <p className="p-6">Error: {adventuresError}</p>
+            ) : (
+              <ApiUsageChart adventures={adventures} />
+            )}
           </motion.div>
         </div>
         <motion.div
-          className="bg-gray-900 rounded-lg p-6 shadow-xl border border-blue-500/20"
+          className="bg-gray-900 rounded-lg p-6 shadow-xl border border-blue-500/20 mt-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
@@ -225,4 +203,15 @@ function AuthKeyInput({ label, value, icon }:any) {
       </div>
     </div>
   )
+}
+
+function formatTimestamp(timestamp: string): string {
+  const date = new Date(timestamp)
+  const now = new Date()
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+  if (diffInSeconds < 60) return 'Just now'
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`
+  return `${Math.floor(diffInSeconds / 86400)} days ago`
 }
