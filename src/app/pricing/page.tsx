@@ -128,8 +128,8 @@ export default function PricingPage() {
         <h1 className="text-4xl font-bold mb-8 text-center">Flexible Pricing for Every Need</h1>
         
         <div className="flex justify-center mb-8">
-          <Tabs value={billingCycle} onValueChange={(value: 'monthly' | 'annual') => setBillingCycle(value)}>
-            <TabsList className="bg-gray-800 p-1 rounded-lg">
+        <Tabs value={billingCycle} onValueChange={(value) => setBillingCycle(value as 'monthly' | 'annual')}>
+        <TabsList className="bg-gray-800 p-1 rounded-lg">
               <TabsTrigger value="monthly" className="px-4 py-2 text-sm font-medium transition-colors data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                 Monthly Billing
               </TabsTrigger>
