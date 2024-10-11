@@ -1,14 +1,27 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from "@/components/ui/button"
+import { useRouter } from 'next/navigation'
+import { MapPin, Search, Menu, X, ChevronDown, User, Mail, Lock } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from "@/components/ui/input"
-import { MapPin, Search, Menu, X, ChevronDown } from "lucide-react"
-import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import Link from 'next/link'
 
 export default function Hero() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isLogin, setIsLogin] = useState(true)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('')
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
@@ -31,8 +44,10 @@ export default function Hero() {
               ))}
             </nav>
             <div className="flex items-center space-x-4">
-            <Button className='bg-white text-black hover:bg-white-700'>Log In</Button>
-              <Button className="hidden sm:inline-flex bg-blue-600 hover:bg-blue-700">
+              <Button className='bg-white text-black hover:bg-gray-200' onClick={() => { setIsLogin(true); setIsModalOpen(true); }}>
+                Log In
+              </Button>
+              <Button className="hidden sm:inline-flex bg-blue-600 hover:bg-blue-700" onClick={() => { setIsLogin(false); setIsModalOpen(true); }}>
                 Sign Up
               </Button>
               <button
@@ -69,8 +84,8 @@ export default function Hero() {
                   {item}
                 </Link>
               ))}
-              <Button className="w-full mt-4">Log In</Button>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700">Sign Up</Button>
+              <Button className="w-full mt-4" onClick={() => { setIsLogin(true); setIsModalOpen(true); setIsMenuOpen(false); }}>Log In</Button>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => { setIsLogin(false); setIsModalOpen(true); setIsMenuOpen(false); }}>Sign Up</Button>
             </nav>
           </motion.div>
         )}
@@ -103,7 +118,7 @@ export default function Hero() {
                 <Button className="w-full sm:w-auto text-lg px-8 py-3 bg-blue-600 hover:bg-blue-700">
                   Get Started
                 </Button>
-                <Button variant="outline" className="w-full sm:w-auto text-lg text-black px-8 py-3">
+                <Button variant="outline" className="w-full sm:w-auto text-lg px-8 py-3 text-black">
                   View Documentation
                 </Button>
               </div>
@@ -129,6 +144,90 @@ export default function Hero() {
           </div>
         </section>
       </main>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="bg-white text-gray-900 rounded-lg p-8 max-w-md w-full"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 15 }}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">{isLogin ? 'Log In' : 'Sign Up'}</h2>
+                <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
+                  <X className="w-6 h-6" />
+                </Button>
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <Input
+                        id="name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+                <Button type="submit" className="w-full">
+                  {isLogin ? 'Log In' : 'Sign Up'}
+                </Button>
+              </form>
+              <p className="mt-4 text-center text-sm text-gray-600">
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  {isLogin ? 'Sign Up' : 'Log In'}
+                </button>
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
