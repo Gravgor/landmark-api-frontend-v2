@@ -28,12 +28,7 @@ export default async function SubscriptionPage() {
         {error ? (
           <div className="text-red-500">{error}</div>
         ) : (
-          <BillingInfo billingInfo={billingInfo} onCancelSubscription={async () => {
-            // Implement the API call to cancel the subscription here
-            // For example:
-            // await cancelSubscription(userId);
-            // Then update the billing info state or refetch it
-          }}/>
+          <BillingInfo billingInfo={billingInfo}/>
         )}
       </main>
     </div>

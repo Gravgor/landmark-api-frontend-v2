@@ -33,10 +33,9 @@ interface BillingInfo {
 
 interface BillingInfoProps {
   billingInfo: BillingInfo
-  onCancelSubscription: () => Promise<void>
 }
 
-export default function BillingInfo({ billingInfo, onCancelSubscription }: BillingInfoProps) {
+export default function BillingInfo({ billingInfo }: BillingInfoProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const formatCurrency = (amount: number, currency: string) => {
@@ -148,11 +147,10 @@ export default function BillingInfo({ billingInfo, onCancelSubscription }: Billi
         </CardContent>
       </Card>
 
-      <SubscriptionModal 
+      {/*<SubscriptionModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={onCancelSubscription}
-      />
+      />*/}
     </div>
   )
 }
