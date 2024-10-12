@@ -25,13 +25,16 @@ export default async function SubscriptionPage() {
         </Link>
         <h1 className="text-4xl font-bold mb-8">Manage Your Subscription</h1>
         
-        {/*error ? (
+        {error ? (
           <div className="text-red-500">{error}</div>
         ) : (
-          <BillingInfo billingInfo={billingInfo} onCancelSubscription={() => {
-            console.log()
+          <BillingInfo billingInfo={billingInfo} onCancelSubscription={async () => {
+            // Implement the API call to cancel the subscription here
+            // For example:
+            // await cancelSubscription(userId);
+            // Then update the billing info state or refetch it
           }}/>
-        )*/}
+        )}
       </main>
     </div>
   )
