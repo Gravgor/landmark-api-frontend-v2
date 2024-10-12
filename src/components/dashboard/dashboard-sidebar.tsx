@@ -56,16 +56,16 @@ export default function Sidebar() {
   ]
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen bg-[#1a2b6d]">Loading...</div>
+    return null
   }
 
   if (!isAuthenticated) {
-    return <div className="flex items-center justify-center h-screen bg-[#1a2b6d]">Please log in to access the dashboard.</div>
+    return null
   }
 
   return (
     <motion.div
-      className="flex flex-col h-screen bg-[#1a2b6d] text-white"
+      className="flex flex-col h-screen text-white"
       initial="expanded"
       animate={isExpanded ? "expanded" : "collapsed"}
       variants={sidebarVariants}

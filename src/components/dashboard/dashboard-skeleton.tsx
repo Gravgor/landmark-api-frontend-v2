@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion'
-import { BarChart2, Globe, Package, Clock, Key, Code } from 'lucide-react'
+import { BarChart2, Globe, Package, Clock, Key, Code, Home, Settings, HelpCircle, LogOut } from 'lucide-react'
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function DashboardSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black text-white">
-      <main className="container mx-auto px-4 py-8">
+    <div className="flex min-h-screen bg-gradient-to-b from-blue-900 to-black text-white">
+      <SkeletonSidebar />
+      <main className="flex-1 container mx-auto px-4 py-8">
         <Skeleton className="h-12 w-3/4 mb-8 bg-gray-700" />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -71,6 +72,56 @@ export function DashboardSkeleton() {
         </motion.div>
       </main>
     </div>
+  )
+}
+
+function SkeletonSidebar() {
+  return (
+    <motion.div
+      className="w-64 bg-gray-900 border-r border-blue-500/20 p-4"
+      initial={{ opacity: 0, x: -50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Skeleton className="h-8 w-3/4 mb-8 bg-gray-700" />
+      <nav className="space-y-2">
+        {[Home, Globe, Key, Package, HelpCircle, Settings].map((Icon, index) => (
+          <motion.div
+            key={index}
+            className="flex items-center space-x-4 p-2 rounded-lg"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+          >
+            <Icon className="h-5 w-5 text-blue-500" />
+            <Skeleton className="h-4 w-24 bg-gray-700" />
+          </motion.div>
+        ))}
+      </nav>
+      <div className="absolute bottom-4 left-4 right-4">
+        <motion.div
+          className="flex items-center space-x-4 p-2 rounded-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+        >
+          <Skeleton className="h-10 w-10 rounded-full bg-gray-700" />
+          <div className="flex-1">
+            <Skeleton className="h-4 w-20 mb-1 bg-gray-700" />
+            <Skeleton className="h-3 w-16 bg-gray-700" />
+          </div>
+        </motion.div>
+        <motion.div
+          className="mt-4 flex items-center space-x-4 p-2 rounded-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
+          <LogOut className="h-5 w-5 text-red-500" />
+          <Skeleton className="h-4 w-16 bg-gray-700" />
+        </motion.div>
+      </div>
+    </motion.div>
   )
 }
 
