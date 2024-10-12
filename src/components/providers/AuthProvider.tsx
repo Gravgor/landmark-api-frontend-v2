@@ -3,6 +3,7 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { DashboardSkeleton } from '../dashboard/dashboard-skeleton'
+import LoadingSpinner from '../LoadingSpinner'
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -48,9 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  if (isLoading) {
-    return <DashboardSkeleton />
-  }
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>

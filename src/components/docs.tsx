@@ -277,28 +277,25 @@ Response:
             <p>We provide official wrappers for various programming languages to make it easier to integrate with our API:</p>
             <ul className="list-disc list-inside space-y-2">
               <li>JavaScript/TypeScript: <a href="#" className="text-blue-400 hover:underline">npm package</a></li>
-              <li>Python: <a href="#" className="text-blue-400 hover:underline">PyPI package</a></li>
-              <li>Ruby: <a href="#" className="text-blue-400 hover:underline">RubyGems package</a></li>
-              <li>PHP: <a href="#" className="text-blue-400 hover:underline">Composer package</a></li>
             </ul>
             <div className="bg-gray-800 p-4 rounded-lg mt-4">
-              <h3 className="text-lg font-semibold mb-2">Example usage (JavaScript)</h3>
+              <h3 className="text-lg font-semibold mb-2">Example usage (JavaScript/Typescript)</h3>
               <pre className="bg-black p-4 rounded text-sm overflow-x-auto">
                 <code>{`
-import { LandmarkAPI } from 'landmark-api';
+import LandmarkAPI from 'landmark-api-wrapper';
 
-const api = new LandmarkAPI('YOUR_API_KEY');
+const api = new LandmarkAPI({ apiKey: 'api_key', authKey: 'jwt_auth_key' });
 
-async function getLandmarks() {
-  try {
-    const landmarks = await api.getLandmarks({ country: 'France', limit: 5 });
-    console.log(landmarks);
-  } catch (error) {
-    console.error('Error fetching landmarks:', error);
-  }
+
+export async function getLandmarks() {
+    const landmarks = await api.getLandmarks()
+    return landmarks.data;
 }
 
-getLandmarks();
+export async function getLandmarksById(id: string) {
+    const landmark = await api.getLandmarkById(id)
+    return landmark;
+}
                 `}</code>
               </pre>
             </div>

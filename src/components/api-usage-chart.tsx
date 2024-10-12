@@ -70,7 +70,7 @@ export default function ApiUsageChart({ adventures }: ApiUsageChartProps) {
               <YAxis stroke="rgba(255,255,255,0.5)" />
               <ChartTooltip 
                 content={
-                  <ChartTooltipContent 
+                  <ChartTooltipContent
                   />
                 }
               />

@@ -76,12 +76,18 @@ export default function Hero() {
                 Access global landmark data with our powerful RESTful API service. Build amazing location-based experiences.
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <Button className="w-full sm:w-auto text-lg px-8 py-3 bg-blue-600 hover:bg-blue-700">
+                <Link
+                href={"#pricing"}>
+                  <Button className="w-full sm:w-auto text-lg px-8 py-3 bg-blue-600 hover:bg-blue-700">
                   Get Started
                 </Button>
-                <Button variant="outline" className="w-full sm:w-auto text-lg px-8 py-3 text-black">
+                </Link>
+                <Link
+                href={"/docs"}>
+                  <Button variant="outline" className="w-full sm:w-auto text-lg px-8 py-3 text-black">
                   View Documentation
                 </Button>
+                </Link>
               </div>
               <div className="max-w-xl mx-auto mt-8">
                 <div className="relative">

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Rocket, AlertCircle } from 'lucide-react'
 
 interface Adventure {
   ID: number
@@ -45,11 +46,24 @@ export default function DashboardAdventures({ adventures, loading, error }: Scro
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <h2 className="text-2xl font-semibold mb-4">Recent API Adventures 🚀</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-white">Recent API Adventures 🚀</h2>
       {loading ? (
-        <p>Loading adventures...</p>
+        <div className="flex items-center justify-center h-[300px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
       ) : error ? (
-        <p>Error: {error}</p>
+        <div className="flex items-center justify-center h-[300px] text-red-400">
+          <AlertCircle className="mr-2" />
+          <p>Error: {error}</p>
+        </div>
+      ) : adventures.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[300px] text-gray-400">
+          <Rocket className="w-16 h-16 mb-4 text-blue-500" />
+          <p className="text-lg font-semibold mb-2">No API Adventures Yet</p>
+          <p className="text-sm text-center max-w-md">
+            Your API journey is about to take off! Make your first API call to see your adventures here.
+          </p>
+        </div>
       ) : (
         <ScrollArea className="h-[300px] pr-4" ref={scrollAreaRef}>
           <div className="space-y-4">
@@ -62,7 +76,7 @@ export default function DashboardAdventures({ adventures, loading, error }: Scro
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <div>
-                  <p className="font-medium">{adventure.Endpoint}</p>
+                  <p className="font-medium text-white">{adventure.Endpoint}</p>
                   <p className="text-sm text-gray-400">{formatTimestamp(adventure.Timestamp)}</p>
                   <p className="text-xs text-gray-500 mt-1">{adventure.Summary}</p>
                 </div>

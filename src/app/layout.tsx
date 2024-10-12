@@ -23,10 +23,8 @@ export default function RootLayout({
       <body
         className={`${inter.className} antialiased min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100`}
       >
-       <AuthProvider>
-          <UserProvider>
-            {children}
-          </UserProvider>
+        <AuthProvider>
+        {children}
         </AuthProvider>
         <Footer />
       </body>
