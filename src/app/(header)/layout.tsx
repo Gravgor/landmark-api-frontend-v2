@@ -70,7 +70,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <Header />
       <main className='mt-16'>
         {children}
       </main>
