@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Globe, Search, Code, Users, BarChart2, Package, Clock, LogOut, ChevronDown, Bell, Settings, Copy, Eye, EyeOff, Key } from 'lucide-react'
+import { Globe, Search, Code, Users, BarChart2, Package, Clock, LogOut, ChevronDown, Bell, Settings, Copy, Eye, EyeOff, Key, CreditCard } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import {
@@ -74,7 +74,7 @@ export default function Dashboard() {
             title="Current Plan"
             value={userData.planType}
             icon={Package}
-            description="Unlock more with Pro+"
+            button={true}
           />
           <DashboardCard
             title="API Uptime"
@@ -136,7 +136,7 @@ export default function Dashboard() {
   )
 }
 
-function DashboardCard({ title, value, icon: Icon, description, children }:any) {
+function DashboardCard({ title, value, icon: Icon, description, button, children }:any) {
   return (
     <motion.div 
       className="bg-gray-900 rounded-lg p-6 shadow-xl border border-blue-500/20"
@@ -154,6 +154,12 @@ function DashboardCard({ title, value, icon: Icon, description, children }:any) 
       </div>
       {children}
       <p className="text-sm text-gray-400 mt-2">{description}</p>
+      {button === true && <Link href="/dashboard/subscription">
+            <Button className="w-full bg-blue-600 hover:bg-blue-700">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Manage Subscription
+            </Button>
+          </Link>}
     </motion.div>
   )
 }

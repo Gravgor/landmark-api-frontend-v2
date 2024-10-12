@@ -7,7 +7,7 @@ import LoadingSpinner from '../LoadingSpinner'
 
 interface AuthContextType {
   isAuthenticated: boolean
-  login: (token: string) => void
+  login: () => void
   logout: () => void
 }
 
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth()
   }, [])
 
-  const login = async (token: string) => {
+  const login = async () => {
     setIsAuthenticated(true)
   }
 

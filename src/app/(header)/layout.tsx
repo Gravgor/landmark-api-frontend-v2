@@ -40,7 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         if (isLogin) {
-          await login(data.token)
+          await login()
           toast({
             title: "Logged in successfully",
             description: "Welcome to Landmark API!",

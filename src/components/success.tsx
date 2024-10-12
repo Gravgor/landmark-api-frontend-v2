@@ -6,12 +6,14 @@ import { motion } from 'framer-motion'
 import { CheckCircle, ArrowRight, XCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { loginAfterRedirect } from '@/app/actions/actions'
+import { useAuth } from '@/hooks/use-auth'
 
 export default function SuccessPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const plan = searchParams.get('plan')
   const [countdown, setCountdown] = useState(10)
+  const {login} = useAuth()
   const [loginStatus, setLoginStatus] = useState<'loading' | 'success' | 'error'>('loading')
 
   useEffect(() => {
@@ -20,6 +22,7 @@ export default function SuccessPage() {
         const result = await loginAfterRedirect()
         if (result.success) {
           setLoginStatus('success')
+          login()
           startCountdown()
         } else {
           setLoginStatus('error')
@@ -38,6 +41,7 @@ export default function SuccessPage() {
       setCountdown((prevCountdown) => {
         if (prevCountdown === 1) {
           clearInterval(timer)
+          
           router.push('/dashboard')
         }
         return prevCountdown - 1
