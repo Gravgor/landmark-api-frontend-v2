@@ -104,7 +104,7 @@ export default function Header({ isModalOpen, setIsModalOpen }: HeaderProps) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 rounded-full flex items-center space-x-2 text-white hover:bg-white/10">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={"" || ""} alt={userData.name} />
+                      <AvatarImage src={""} alt={userData.name} />
                       <AvatarFallback className='text-black'>{userData.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <span className="text-sm font-medium">{userData.name}</span>
