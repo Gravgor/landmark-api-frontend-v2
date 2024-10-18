@@ -120,19 +120,10 @@ export default function PricingSection() {
   }
 
   const PlanCard = useCallback(({ plan, index }: { plan: typeof plans[0], index: number }) => {
-    const xOffset = useTransform(scrollYProgress, [0, 0.5], [100 * (index + 1), 0])
-    const opacity = useTransform(scrollYProgress, [0, 0.3, 0.5], [0, 0.5, 1])
-    const rotateY = useTransform(scrollYProgress, [0, 0.5], [45, 0])
+    
 
     return (
       <motion.div
-        style={{
-          x: xOffset,
-          opacity,
-          rotateY,
-          transformStyle: 'preserve-3d',
-          perspective: 1000,
-        }}
         className={`flex flex-col p-6 bg-gray-800 bg-opacity-75 rounded-lg border ${
           plan.highlighted
             ? "border-blue-500 shadow-lg shadow-blue-500/50"

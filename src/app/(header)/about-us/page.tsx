@@ -1,12 +1,19 @@
 "use client"
+
 import { motion } from 'framer-motion'
-import { Globe, Users, Rocket } from 'lucide-react'
+import { Globe, Users, Rocket, Linkedin, Github } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 
 export default function AboutUs() {
   const teamMembers = [
-    { name: 'Marceli Borowczak', role: 'Founder & CEO & Lead Developer', image: '/placeholder.svg?height=100&width=100' },
+    { 
+      name: 'Marceli Borowczak', 
+      role: 'Founder & CEO & Lead Developer', 
+      image: '/placeholder.svg?height=100&width=100',
+      linkedin: 'https://www.linkedin.com/in/marceli-borowczak-b63808249/',
+      github: 'https://github.com/Gravgor'
+    },
   ]
 
   const milestones = [
@@ -97,7 +104,19 @@ export default function AboutUs() {
               >
                 <img src={member.image} alt={member.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
                 <h3 className="text-xl font-semibold">{member.name}</h3>
-                <p className="text-blue-300">{member.role}</p>
+                <p className="text-blue-300 mb-4">{member.role}</p>
+                <div className="flex justify-center space-x-4">
+                  {member.linkedin && (
+                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-400 transition-colors">
+                      <Linkedin className="h-6 w-6" />
+                    </a>
+                  )}
+                  {member.github && (
+                    <a href={member.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition-colors">
+                      <Github className="h-6 w-6" />
+                    </a>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -127,11 +146,10 @@ export default function AboutUs() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <Link
-            href="/#pricing">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              Get Access
-            </Button>
+            <Link href="/#pricing">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                Get Access
+              </Button>
             </Link>
           </motion.div>
         </div>
