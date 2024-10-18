@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { MapPin, Menu, X, User } from 'lucide-react'
-
 const navItems = [
   { name: 'Features', href: '#features' },
   {name: 'Pricing', href: '#pricing'},
