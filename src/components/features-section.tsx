@@ -72,16 +72,47 @@ export default function FeaturesSection() {
       "id": "7f3fabf9-a410-4f07-ba7c-4e3723b3a194",
       "images": [
         {
-          "image_url": "https://example.com/mount-fuji-1.jpg",
-          "created_at": "2024-10-16T17:43:16.551837Z"
+          "image_url": "https://properties-photos.s3.amazonaws.com/landmarks/7a285aaefd0dcdadcde62819d731c21af5462d64d5c4ec02ba9ceee9b/api/v1/landmarks/upload-photo/R (2)_20241016173821_ac70cbc2.jpg",
+          "created_at": "2024-10-16T17:43:16.551837Z",
+          "updated_at": "2024-10-16T17:43:16.551837Z"
         },
         {
-          "image_url": "https://example.com/mount-fuji-2.jpg",
-          "created_at": "2024-10-16T17:43:16.551837Z"
-        }
+          "image_url": "https://properties-photos.s3.amazonaws.com/landmarks/7a285aaefd0dcdadcde62819d731c21af5462d64d5c4ec02ba9ceee9b/api/v1/landmarks/upload-photo/R (1)_20241016173823_ba2efda8.jpg",
+          "created_at": "2024-10-16T17:43:16.551837Z",
+          "updated_at": "2024-10-16T17:43:16.551837Z"
+        },
+        {
+          "image_url": "https://properties-photos.s3.amazonaws.com/landmarks/7a285aaefd0dcdadcde62819d731c21af5462d64d5c4ec02ba9ceee9b/api/v1/landmarks/upload-photo/OIP (2)_20241016173824_26bcb482.jpg",
+          "created_at": "2024-10-16T17:43:16.551837Z",
+          "updated_at": "2024-10-16T17:43:16.551837Z"
+        },
+        {
+          "image_url": "https://properties-photos.s3.amazonaws.com/landmarks/7a285aaefd0dcdadcde62819d731c21af5462d64d5c4ec02ba9ceee9b/api/v1/landmarks/upload-photo/R_20241016173824_9b8d4f1e.jpg",
+          "created_at": "2024-10-16T17:43:16.551837Z",
+          "updated_at": "2024-10-16T17:43:16.551837Z"
+        },
       ],
       "accessibility_info": "Accessible by bus or car to the 5th Station for non-climbers.",
-      "visitor_tips": "Climbers should prepare for rapid weather changes and pack warm clothes, food, and water."
+      "opening_hours": {
+        "Friday": "24/7, official climbing season July to early Semptember",
+        "Monday": "24/7, official climbing season July to early Semptember",
+        "Saturday": "24/7, official climbing season July to early Semptember",
+        "Sunday": "24/7, official climbing season July to early Semptember",
+        "Thursday": "24/7, official climbing season July to early Semptember",
+        "Tuesday": "24/7, official climbing season July to early Semptember",
+        "Wednesday": "24/7, official climbing season July to early Semptember"
+      },
+      "visitor_tips": "Climbers should prepare for rapid weather changes and pack warm clothes, food, and water.",
+      "weather_info": {
+        "main": {
+          "temp": 4.84
+        },
+        "weather": [
+          {
+            "description": "broken clouds"
+          }
+        ]
+      }
     }
   ],
   "meta": {
