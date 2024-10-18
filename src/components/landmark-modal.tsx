@@ -15,7 +15,7 @@ interface OpeningHours {
 }
 
 interface TicketPrices {
-  [key: string]: number
+  [key: string]: string
 }
 
 interface WeatherInfo {
@@ -133,7 +133,7 @@ export default function LandmarkModal({ landmark, onClose }: LandmarkModalProps)
                 {Object.entries(landmark.ticket_prices).map(([type, price]) => (
                   <li key={type} className="flex justify-between">
                     <span>{type}</span>
-                    <span>${price.toFixed(2)}</span>
+                    <span>${price}</span>
                   </li>
                 ))}
               </ul>

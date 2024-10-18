@@ -24,7 +24,7 @@ interface OpeningHours {
 }
 
 interface TicketPrices {
-  [key: string]: number
+  [key: string]: string
 }
 
 interface WeatherInfo {
