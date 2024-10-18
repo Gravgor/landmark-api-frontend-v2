@@ -9,6 +9,7 @@ interface UserData {
   planType: string
   apiCalls: number
   apiLimit: number
+  onboarding: boolean
   landmarks: number
   apiKey: string
   accessToken: string

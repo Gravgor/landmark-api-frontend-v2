@@ -9,6 +9,7 @@ import Link from "next/link"
 import { useAuth } from "@/hooks/use-auth"
 import { useUser } from "@/components/providers/UserProvider"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
+import LightOnboardingFlow from "@/components/dashboard/dashboard-onboarding"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isExpanded, setIsExpanded] = useState(true)
@@ -32,6 +33,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ]
 
   if (!isAuthenticated || !userData) {
+    return <DashboardSkeleton />
+  }
+
+  if(userData.onboarding === true) {
     return <DashboardSkeleton />
   }
 
@@ -139,6 +144,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Button>
         </div>
       </motion.div>
+      <AnimatePresence>
+        {userData.onboarding && (
+          <LightOnboardingFlow />
+        )}
+      </AnimatePresence>
       <div className="flex-1 overflow-auto">
         {children}
       </div>
