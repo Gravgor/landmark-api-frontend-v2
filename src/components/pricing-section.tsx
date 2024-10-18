@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { loadStripe } from '@stripe/stripe-js';
+import { useState, useRef, useCallback } from 'react'
+import { loadStripe } from '@stripe/stripe-js'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { Check, X, User, Mail, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,58 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createAccount } from '@/app/actions/actions'
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+
+const plans = [
+  {
+    name: "Free",
+    price: "$0",
+    description: "For small projects and testing",
+    features: [
+      "100 requests / day",
+      "Basic landmark info",
+      "Standard support",
+      "API key required",
+    ],
+    limitations: [
+      "No advanced search",
+      "Limited to 10 countries",
+    ],
+    cta: "Get Started",
+    highlighted: false,
+  },
+  {
+    name: "Pro",
+    price: "$49",
+    period: "per month",
+    description: "For growing applications",
+    features: [
+      "10,000 requests / day",
+      "Advanced landmark details",
+      "Priority support",
+      "API key required",
+      "Advanced search",
+      "Access to all countries",
+    ],
+    cta: "Upgrade to Pro",
+    highlighted: true,
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    description: "For large-scale applications",
+    features: [
+      "Unlimited requests",
+      "Full landmark database access",
+      "24/7 dedicated support",
+      "Custom API integration",
+      "Advanced analytics",
+      "Service Level Agreement (SLA)",
+    ],
+    cta: "Contact Sales",
+    highlighted: false,
+  },
+]
 
 export default function PricingSection() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
@@ -25,57 +76,6 @@ export default function PricingSection() {
     target: sectionRef,
     offset: ["start end", "end start"]
   })
-
-  const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      description: "For small projects and testing",
-      features: [
-        "100 requests / day",
-        "Basic landmark info",
-        "Standard support",
-        "API key required",
-      ],
-      limitations: [
-        "No advanced search",
-        "Limited to 10 countries",
-      ],
-      cta: "Get Started",
-      highlighted: false,
-    },
-    {
-      name: "Pro",
-      price: "$49",
-      period: "per month",
-      description: "For growing applications",
-      features: [
-        "10,000 requests / day",
-        "Advanced landmark details",
-        "Priority support",
-        "API key required",
-        "Advanced search",
-        "Access to all countries",
-      ],
-      cta: "Upgrade to Pro",
-      highlighted: true,
-    },
-    {
-      name: "Enterprise",
-      price: "Custom",
-      description: "For large-scale applications",
-      features: [
-        "Unlimited requests",
-        "Full landmark database access",
-        "24/7 dedicated support",
-        "Custom API integration",
-        "Advanced analytics",
-        "Service Level Agreement (SLA)",
-      ],
-      cta: "Contact Sales",
-      highlighted: false,
-    },
-  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,31 +93,88 @@ export default function PricingSection() {
 
       if (result.success) {
         if (selectedPlan?.toLowerCase() === 'pro') {
-          const stripe = await stripePromise;
+          const stripe = await stripePromise
           if (!stripe) {
-            throw new Error('Stripe failed to initialize');
+            throw new Error('Stripe failed to initialize')
           }
 
           const { error } = await stripe.redirectToCheckout({
             sessionId: result.sessionId,
-          });
+          })
 
           if (error) {
-            throw new Error(error.message);
+            throw new Error(error.message)
           }
         } else {
           // For free plan, redirect to success page
-          window.location.href = `/success?plan=${selectedPlan?.toLowerCase()}`;
+          window.location.href = `/success?plan=${selectedPlan?.toLowerCase()}`
         }
       } else {
-        throw new Error(result.message || 'An error occurred during account creation.');
+        throw new Error(result.message || 'An error occurred during account creation.')
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'An unexpected error occurred.');
+      setMessage(error instanceof Error ? error.message : 'An unexpected error occurred.')
     } finally {
       setIsLoading(false)
     }
   }
+
+  const PlanCard = useCallback(({ plan, index }: { plan: typeof plans[0], index: number }) => {
+    const xOffset = useTransform(scrollYProgress, [0, 0.5], [100 * (index + 1), 0])
+    const opacity = useTransform(scrollYProgress, [0, 0.3, 0.5], [0, 0.5, 1])
+    const rotateY = useTransform(scrollYProgress, [0, 0.5], [45, 0])
+
+    return (
+      <motion.div
+        style={{
+          x: xOffset,
+          opacity,
+          rotateY,
+          transformStyle: 'preserve-3d',
+          perspective: 1000,
+        }}
+        className={`flex flex-col p-6 bg-gray-800 bg-opacity-75 rounded-lg border ${
+          plan.highlighted
+            ? "border-blue-500 shadow-lg shadow-blue-500/50"
+            : "border-gray-700"
+        }`}
+      >
+        <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+        <div className="mb-4">
+          <span className="text-4xl font-bold">{plan.price}</span>
+          {plan.period && <span className="text-gray-400">/{plan.period}</span>}
+        </div>
+        <p className="text-gray-400 mb-6">{plan.description}</p>
+        <ul className="mb-6 flex-grow">
+          {plan.features.map((feature, featureIndex) => (
+            <li key={featureIndex} className="flex items-center mb-2">
+              <Check className="h-5 w-5 mr-2 text-green-500" />
+              <span>{feature}</span>
+            </li>
+          ))}
+          {plan.limitations && plan.limitations.map((limitation, limitationIndex) => (
+            <li key={limitationIndex} className="flex items-center mb-2 text-gray-500">
+              <X className="h-5 w-5 mr-2 text-red-500" />
+              <span>{limitation}</span>
+            </li>
+          ))}
+        </ul>
+        <Button
+          className={`w-full ${
+            plan.highlighted
+              ? "bg-blue-600 hover:bg-blue-700"
+              : "bg-gray-700 hover:bg-gray-600"
+          }`}
+          onClick={() => {
+            setSelectedPlan(plan.name)
+            setIsModalOpen(true)
+          }}
+        >
+          {plan.cta}
+        </Button>
+      </motion.div>
+    )
+  }, [scrollYProgress, setSelectedPlan, setIsModalOpen])
 
   return (
     <section ref={sectionRef} id="pricing" className="w-full py-20 bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden">
@@ -125,63 +182,9 @@ export default function PricingSection() {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Flexible Pricing Plans</h2>
         <div className="grid gap-8 md:grid-cols-3">
-          {plans.map((plan, index) => {
-            const xOffset = useTransform(scrollYProgress, [0, 0.5], [100 * (index + 1), 0])
-            const opacity = useTransform(scrollYProgress, [0, 0.3, 0.5], [0, 0.5, 1])
-            const rotateY = useTransform(scrollYProgress, [0, 0.5], [45, 0])
-
-            return (
-              <motion.div
-                key={index}
-                style={{
-                  x: xOffset,
-                  opacity,
-                  rotateY,
-                  transformStyle: 'preserve-3d',
-                  perspective: 1000,
-                }}
-                className={`flex flex-col p-6 bg-gray-800 bg-opacity-75 rounded-lg border ${
-                  plan.highlighted
-                    ? "border-blue-500 shadow-lg shadow-blue-500/50"
-                    : "border-gray-700"
-                }`}
-              >
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <div className="mb-4">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  {plan.period && <span className="text-gray-400">/{plan.period}</span>}
-                </div>
-                <p className="text-gray-400 mb-6">{plan.description}</p>
-                <ul className="mb-6 flex-grow">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center mb-2">
-                      <Check className="h-5 w-5 mr-2 text-green-500" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                  {plan.limitations && plan.limitations.map((limitation, limitationIndex) => (
-                    <li key={limitationIndex} className="flex items-center mb-2 text-gray-500">
-                      <X className="h-5 w-5 mr-2 text-red-500" />
-                      <span>{limitation}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  className={`w-full ${
-                    plan.highlighted
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-gray-700 hover:bg-gray-600"
-                  }`}
-                  onClick={() => {
-                    setSelectedPlan(plan.name)
-                    setIsModalOpen(true)
-                  }}
-                >
-                  {plan.cta}
-                </Button>
-              </motion.div>
-            )
-          })}
+          {plans.map((plan, index) => (
+            <PlanCard key={plan.name} plan={plan} index={index} />
+          ))}
         </div>
         {message && (
           <div className="mt-8 p-4 bg-gray-700 rounded-lg text-center max-w-md mx-auto">

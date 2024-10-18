@@ -1,10 +1,12 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { MapPin, ArrowRight } from "lucide-react"
+import { MapPin, ArrowRight, Loader2, CheckCircle, XCircle } from "lucide-react"
+import Link from 'next/link'
+import { toast } from "@/hooks/use-toast"
 
 export default function CTASection() {
   const sectionRef = useRef(null)
@@ -13,6 +15,10 @@ export default function CTASection() {
     target: sectionRef,
     offset: ["start end", "end start"]
   })
+
+  const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1])
   const scale = useTransform(scrollYProgress, [0, 0.2], [0.8, 1])
@@ -41,8 +47,45 @@ export default function CTASection() {
     visible: { opacity: 1, y: 0 },
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/create-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create account')
+      }
+
+      setIsSuccess(true)
+      toast({
+        title: "Account created successfully!",
+        description: "Please check your email for further instructions.",
+        duration: 5000,
+      })
+    } catch (error) {
+      console.error('Error creating account:', error)
+      toast({
+        title: "Error creating account",
+        description: "Please try again later or contact support.",
+        variant: "destructive",
+        duration: 5000,
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <motion.section 
+    id="cta"
       ref={sectionRef}
       style={{ opacity }}
       className="w-full py-20 bg-gradient-to-r from-blue-900 to-purple-900 text-white overflow-hidden"
@@ -67,31 +110,49 @@ export default function CTASection() {
             >
               Join thousands of developers already using Landmark API to power their applications. Start your journey today!
             </motion.p>
-            <motion.div 
+            <motion.form 
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4"
+              onSubmit={handleSubmit}
             >
               <Input
                 type="email"
                 placeholder="Enter your email"
                 className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
-              <Button className="bg-white text-blue-900 hover:bg-gray-200 transition-colors group">
-                Get Started
-                <motion.div
-                  initial={{ x: 0 }}
-                  whileHover={{ x: 5 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </motion.div>
+              <Button 
+                type="submit" 
+                className="bg-white text-blue-900 hover:bg-gray-200 transition-colors group"
+                disabled={isLoading || isSuccess}
+              >
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : isSuccess ? (
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                ) : (
+                  <>
+                    Get Started
+                    <motion.div
+                      initial={{ x: 0 }}
+                      whileHover={{ x: 5 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </motion.div>
+                  </>
+                )}
               </Button>
-            </motion.div>
+            </motion.form>
             <motion.p 
               variants={itemVariants}
               className="mt-4 text-sm text-gray-400"
             >
-              No credit card required. Start with our free plan and upgrade anytime.
+              {isSuccess 
+                ? "Account created! Please check your email for further instructions." 
+                : "No credit card required. Start with our free plan and upgrade anytime."}
             </motion.p>
           </motion.div>
           <motion.div 
@@ -138,16 +199,18 @@ export default function CTASection() {
                   </motion.li>
                 ))}
               </ol>
-              <Button className="mt-8 w-full bg-blue-600 hover:bg-blue-700 group">
-                View Documentation
-                <motion.div
-                  initial={{ x: 0 }}
-                  whileHover={{ x: 5 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </motion.div>
-              </Button>
+             <Link href="/docs">
+               <Button className="mt-8 w-full bg-blue-600 hover:bg-blue-700 group">
+                  View Documentation
+                  <motion.div
+                    initial={{ x: 0 }}
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </motion.div>
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>

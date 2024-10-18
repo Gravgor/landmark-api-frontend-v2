@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
-import { MapPin, Menu, X } from 'lucide-react'
+import { MapPin, Menu, X, User } from 'lucide-react'
 
 const navItems = [
-  { name: 'Features', href: '/features' },
-  { name: 'Pricing', href: '/pricing' },
-  { name: 'Docs', href: '/docs' },
+  { name: 'Features', href: '#features' },
+  {name: 'Pricing', href: '#pricing'},
+  {name: 'Get Started', href: '#cta'}
 ]
 
 export default function Header() {
@@ -69,20 +69,34 @@ export default function Header() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
             >
-             <Link
-             href={"#pricing"}>
-               <Button 
-                className="bg-blue-500 hover:bg-blue-600 text-white" 
-              >
-                Get Started
-              </Button>
-             </Link>
+              <Link href="#pricing">
+                <Button 
+                  className="bg-blue-500 hover:bg-blue-600 text-white" 
+                >
+                  Get Started
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Link href="/auth">
+                <Button 
+                  variant="outline"
+                  className="text-black border-white hover:bg-white hover:text-blue-900"
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  Sign In
+                </Button>
+              </Link>
             </motion.div>
             <motion.div
               className="md:hidden"
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.6 }}
             >
               <Button
                 variant="ghost"
@@ -125,6 +139,18 @@ export default function Header() {
                   </Link>
                 </motion.div>
               ))}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navItems.length * 0.1 }}
+              >
+                <Link
+                  href="/auth"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 transition-colors"
+                >
+                  Sign In
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         )}
