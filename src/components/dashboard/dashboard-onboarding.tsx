@@ -45,7 +45,7 @@ export default function LightOnboardingFlow() {
         })
 
         if (response.ok) {
-          router.refresh()
+          router.push('/dashboard')
         } else {
           // Handle error responses
           const errorData = await response.json()
