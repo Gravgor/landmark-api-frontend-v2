@@ -56,9 +56,10 @@ export default function FinalEnhancedAuthPage() {
   const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login'
   const payload = isSignUp ? {name, email, password} : {email, password}
   const loginSearchParam = searchParams.get("login")
-  if(loginSearchParam) {
+
+  useEffect(() => {
     setIsSignUp(false)
-  }
+  },[loginSearchParam])
 
   async function handleSubmit(formData: FormData) {
     if (isSignUp && !acceptTerms) {
