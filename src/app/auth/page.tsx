@@ -1,5 +1,6 @@
 import FinalEnhancedAuthPage from "@/components/auth-form";
+import { Suspense } from "react";
 
 export default function Page(){
-    return <FinalEnhancedAuthPage />
+    return <Suspense><FinalEnhancedAuthPage /></Suspense>
 }
