@@ -392,11 +392,7 @@ export default function Hero() {
 
       <AnimatePresence>
       {isModalOpen && (
-        <div className="modal">
-          <p>Are you still here?</p>
-          <button onClick={() => handleModalResponse(true)}>Yes</button>
-          <button onClick={() => handleModalResponse(false)}>No</button>
-        </div>
+       <></>
       )}
       </AnimatePresence>
     </div>
