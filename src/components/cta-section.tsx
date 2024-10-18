@@ -52,7 +52,7 @@ export default function CTASection() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/create-account', {
+      const response = await fetch('https://api.landmark-api.com/auth/register-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
