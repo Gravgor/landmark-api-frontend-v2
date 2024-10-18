@@ -37,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   if(userData.onboarding === true) {
-    return <DashboardSkeleton />
+    return <LightOnboardingFlow />
   }
 
   return (

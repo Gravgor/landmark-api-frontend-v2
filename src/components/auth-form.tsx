@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, User, Lock, Eye, EyeOff, Mail, ChevronRight, Loader2 } from 'lucide-react'
 import { useFormStatus } from 'react-dom'
 import { useAuth } from '@/hooks/use-auth'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -40,6 +40,7 @@ export default function FinalEnhancedAuthPage() {
   const [animatingLandmarks, setAnimatingLandmarks] = useState<{ x: number; y: number; scale: number }[]>([])
   const { login } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
 
 
@@ -54,6 +55,10 @@ export default function FinalEnhancedAuthPage() {
 
   const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login'
   const payload = isSignUp ? {name, email, password} : {email, password}
+  const loginSearchParam = searchParams.get("login")
+  if(loginSearchParam) {
+    setIsSignUp(false)
+  }
 
   async function handleSubmit(formData: FormData) {
     if (isSignUp && !acceptTerms) {

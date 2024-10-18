@@ -38,6 +38,7 @@ export default function Dashboard() {
     return null
   }
 
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black text-white">
       <main className="container mx-auto px-4 py-8">

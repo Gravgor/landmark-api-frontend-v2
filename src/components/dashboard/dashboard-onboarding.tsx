@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChevronRight, UserCircle, Key, CheckCircle, Globe } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function LightOnboardingFlow() {
   const [step, setStep] = useState(1)
@@ -16,22 +17,45 @@ export default function LightOnboardingFlow() {
     password: "",
     confirmPassword: "",
   })
+  const [error, setError] = useState('')
+
+  const router = useRouter()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (step < 3) {
       setStep((prev) => prev + 1)
     } else {
-      // Here you would typically send the data to your backend
-      console.log("Form submitted:", formData)
+      const { firstName, lastName, password } = formData
+      try {
+        const response = await fetch("/api/user/update", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: `${firstName} ${lastName}`.trim(),
+            password
+          })
+        })
+
+        if (response.ok) {
+          router.refresh()
+        } else {
+          // Handle error responses
+          const errorData = await response.json()
+        }
+      } catch (error) {
+        // Handle network errors or other exceptions
+        setError("An error occurred. Please check your connection and try again.")
+      }
     }
   }
-
   const steps = [
     {
       title: "Welcome to Landmark API",
