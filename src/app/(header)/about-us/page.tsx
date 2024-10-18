@@ -14,6 +14,12 @@ export default function AboutUs() {
       linkedin: 'https://www.linkedin.com/in/marceli-borowczak-b63808249/',
       github: 'https://github.com/Gravgor'
     },
+    {
+      name: 'Igor Tęcza',
+      role: 'Creative Director',
+      image: '/placeholder.svg?height=100&width=100',
+      linkedin: 'https://www.linkedin.com/in/igor-tecza',
+    }
   ]
 
   const milestones = [
