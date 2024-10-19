@@ -102,10 +102,10 @@ export default function RootLayout({
       >
         <AuthProvider>
             <main>{children}</main>
-            <GoogleAnalytics gaId="G-1CBNJR36F"/>
             <Footer />
         </AuthProvider>
       </body>
+      <GoogleAnalytics gaId="G-1CBNJR36F"/>
     </html>
   );
 }
