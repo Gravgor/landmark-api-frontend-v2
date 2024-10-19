@@ -10,11 +10,13 @@ import { useAuth } from "@/hooks/use-auth"
 import { useUser } from "@/components/providers/UserProvider"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import LightOnboardingFlow from "@/components/dashboard/dashboard-onboarding"
+import { useRouter } from "next/navigation"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isExpanded, setIsExpanded] = useState(true)
   const { isAuthenticated, logout } = useAuth()
   const { userData } = useUser()
+  const router = useRouter()
 
   const toggleSidebar = () => setIsExpanded(!isExpanded)
 
@@ -33,6 +35,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ]
 
   if (!isAuthenticated || !userData) {
+    setTimeout(() => {
+      router.push('/auth')
+    },3000)
     return <DashboardSkeleton />
   }
 
