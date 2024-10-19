@@ -6,6 +6,10 @@ import { MapPin, User, Lock, Eye, EyeOff, Mail, ChevronRight, Loader2 } from 'lu
 import { useFormStatus } from 'react-dom'
 import { useAuth } from '@/hooks/use-auth'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { loadStripe } from '@stripe/stripe-js'
+import { createAccount } from '@/app/actions/actions'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -30,19 +34,18 @@ function SubmitButton() {
   )
 }
 
-export default function FinalEnhancedAuthPage() {
+export default function EnhancedAuthPage() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState('free')
   const [animatingLandmarks, setAnimatingLandmarks] = useState<{ x: number; y: number; scale: number }[]>([])
   const { login } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
-
-
 
   useEffect(() => {
     const landmarks = Array.from({ length: 20 }, () => ({
@@ -53,38 +56,66 @@ export default function FinalEnhancedAuthPage() {
     setAnimatingLandmarks(landmarks)
   }, [])
 
-  const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login'
-  const payload = isSignUp ? {name, email, password} : {email, password}
   const loginSearchParam = searchParams.get("login")
 
   useEffect(() => {
     setIsSignUp(false)
-  },[loginSearchParam])
+  }, [loginSearchParam])
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
     if (isSignUp && !acceptTerms) {
       alert('Please accept the terms of service')
       return
     }
-    const request = await fetch(`${endpoint}`,{
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-    }) 
-    if (request.ok) {
-        if(!isSignUp) {
-            await login()
-            router.push('/dashboard')
+
+    if (isSignUp) {
+      const formData = new FormData()
+      formData.append('name', name)
+      formData.append('email', email)
+      formData.append('password', password)
+      formData.append('plan', selectedPlan.toLowerCase())
+
+      try {
+        const result = await createAccount(formData)
+
+        if (result.success) {
+          const stripe = await stripePromise
+          if (!stripe) {
+            throw new Error('Stripe failed to initialize')
+          }
+          const { error } = await stripe.redirectToCheckout({
+            sessionId: result.sessionId,
+          })
+          if (error) {
+            console.error('Stripe redirect error:', error)
+          }
         } else {
-            const request = await fetch(`/api/auth/login`, {
-                method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({email, password})
-            })
-            if(request.ok) {
-                router.push('/dashboard')
-            }
+          console.error('Account creation failed:', result.message)
         }
+      } catch (error) {
+        console.error('Error during account creation:', error)
+      }
+    } else {
+      try {
+        const loginResponse = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        })
+
+        if (loginResponse.ok) {
+          await login()
+          router.push('/dashboard')
+        } else {
+          const errorData = await loginResponse.json()
+          console.error('Login failed:', errorData.message)
+        }
+      } catch (error) {
+        console.error('Error during login:', error)
+      }
     }
   }
 
@@ -148,7 +179,7 @@ export default function FinalEnhancedAuthPage() {
             <h2 className="text-4xl font-bold text-white mb-6 text-center">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </h2>
-            <form action={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {isSignUp && (
                 <motion.div variants={inputVariants} whileFocus="focus">
                   <div className="relative">
@@ -201,26 +232,44 @@ export default function FinalEnhancedAuthPage() {
                 </div>
               </motion.div>
               {isSignUp && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <label className="flex items-center space-x-2 text-white">
-                    <input
-                      type="checkbox"
-                      checked={acceptTerms}
-                      onChange={(e) => setAcceptTerms(e.target.checked)}
-                      className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
-                    />
-                    <span className="text-sm">
-                      I accept the{' '}
-                      <a href="#" className="text-blue-400 hover:underline">
-                        Terms of Service
-                      </a>
-                    </span>
-                  </label>
-                </motion.div>
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <label className="block text-white mb-2">Select Plan</label>
+                    <select
+                      name="plan"
+                      value={selectedPlan}
+                      onChange={(e) => setSelectedPlan(e.target.value)}
+                      className="w-full px-3 py-2 bg-white bg-opacity-20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                      <option value="free">Free</option>
+                      <option value="pro">Pro</option>
+                    </select>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <label className="flex items-center space-x-2 text-white">
+                      <input
+                        type="checkbox"
+                        checked={acceptTerms}
+                        onChange={(e) => setAcceptTerms(e.target.checked)}
+                        className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                      />
+                      <span className="text-sm">
+                        I accept the{' '}
+                        <a href="#" className="text-blue-400 hover:underline">
+                          Terms of Service
+                        </a>
+                      </span>
+                    </label>
+                  </motion.div>
+                </>
               )}
               <SubmitButton />
             </form>
