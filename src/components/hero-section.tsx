@@ -97,6 +97,20 @@ export default function Hero() {
     }
   }, [inView, hasMore, isLoading])
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if(searchTerm === '') {
+      timer = setTimeout(() => {
+        setShowLandmarks(false)
+      },10000)
+    }
+    return () => {
+      if (timer) {
+        clearTimeout(timer)
+      }
+    }
+  },[searchTerm])
+
   const fetchLandmarks = useCallback(async (query: string, offsetValue: number = 0) => {
     if (query.trim()) {
       setIsLoading(true)
