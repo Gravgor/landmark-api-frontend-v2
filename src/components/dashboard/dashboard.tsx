@@ -119,11 +119,6 @@ export default function Dashboard() {
               value={userData.apiKey}
               icon={<Key className="h-4 w-4 text-blue-500" />}
             />
-            <AuthKeyInput
-              label="Access Token"
-              value={userData.accessToken}
-              icon={<Code className="h-4 w-4 text-blue-500" />}
-            />
           </div>
           <div className="mt-6">
             <Button className="w-full">

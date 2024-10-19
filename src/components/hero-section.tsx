@@ -124,7 +124,6 @@ export default function Hero() {
         const response = await fetch(`https://api.landmark-api.com/api/v1${endpoint}`, {
           headers: {
             'x-api-key': '43f79790-bc83-47a5-ad99-ee965c27bc34',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk0MjcyNzUsInBsYW5fdHlwZSI6IlBSTyIsInJvbGUiOiJhZG1pbiIsInN1YnNjcmlwdGlvbl9pZCI6IjllYzRiYTcwLThkOTctNDY5OC05ZDllLWM2MTdkZGQyZjljNiIsInVzZXJfaWQiOiJkN2NlY2JhNS1iODFiLTRhMTItYWE3My0zZjcxYjNiZGI2NjMifQ.6U1RpDPYZEcktxUuFsMgKG3mCWBw-R3O9cTPj5GOO6U',
           }
         })
         if (!response.ok) {
