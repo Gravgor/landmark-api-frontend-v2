@@ -92,12 +92,11 @@ export default function PricingSection() {
       const result = await createAccount(formData)
 
       if (result.success) {
-        if (selectedPlan?.toLowerCase() === 'pro') {
           const stripe = await stripePromise
           if (!stripe) {
             throw new Error('Stripe failed to initialize')
           }
-
+          console.log(result)
           const { error } = await stripe.redirectToCheckout({
             sessionId: result.sessionId,
           })
@@ -105,10 +104,6 @@ export default function PricingSection() {
           if (error) {
             throw new Error(error.message)
           }
-        } else {
-          // For free plan, redirect to success page
-          window.location.href = `/success?plan=${selectedPlan?.toLowerCase()}`
-        }
       } else {
         throw new Error(result.message || 'An error occurred during account creation.')
       }

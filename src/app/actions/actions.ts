@@ -39,30 +39,34 @@ export async function createAccount(formData: FormData) {
       path: '/',
     })
 
-    // 3. Handle pro plan subscription
-    if (plan === "pro") {
-      const userID = accountData.User.id
-      const planType = "monthly"
-      const stripeResponse = await fetch(
-        `${process.env.API_URL}subscription/create-checkout`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userID, planType }),
-        }
-      )
-
-      if (!stripeResponse.ok) {
-        throw new Error("Failed to create Stripe checkout session")
+    // 3. Create Stripe session for both free and pro plans
+    const userID = accountData.User.id
+    const planType = plan === "pro" ? "monthly" : "free"
+    
+    const stripeResponse = await fetch(
+      `${process.env.API_URL}subscription/create-checkout`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userID, planType, plan }),
       }
+    )
 
-      const stripeData = await stripeResponse.json()
-      return { success: true, sessionId: stripeData.sessionId }
+    if (!stripeResponse.ok) {
+      throw new Error("Failed to create Stripe checkout session")
     }
 
-    return { success: true }
+    const stripeData = await stripeResponse.json()
+
+    return { 
+      success: true, 
+      sessionId: stripeData.sessionId, 
+      plan: plan,
+      userId: userID
+    }
+
   } catch (error) {
     console.error("Error in account creation process:", error)
     return { success: false, message: "An error occurred. Please try again." }
