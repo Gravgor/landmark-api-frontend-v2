@@ -174,17 +174,20 @@ export default function Hero() {
   }
 
   const resetInactivityTimer = useCallback(() => {
-    if (inactivityTimer) {
-      clearTimeout(inactivityTimer)
+    // Only reset timer if there is a lastSearchTerm
+    if (lastSearchTerm) {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer)
+      }
+      
+      const timer = setTimeout(() => {
+        setIsModalOpen(true)
+      }, 300000) // 5 minutes inactivity
+  
+      //@ts-ignore
+      setInactivityTimer(timer)
     }
-    
-    const timer = setTimeout(() => {
-      setIsModalOpen(true)
-    }, 300000)
-
-    //@ts-ignore
-    setInactivityTimer(timer)
-  }, [inactivityTimer])
+  }, [inactivityTimer, lastSearchTerm])
 
   const handleModalResponse = useCallback((isUserStillHere: boolean) => {
     setIsModalOpen(false)
@@ -196,13 +199,16 @@ export default function Hero() {
   }, [resetInactivityTimer])
 
   useEffect(() => {
-    resetInactivityTimer()
+    if (lastSearchTerm) {
+      resetInactivityTimer()
+    }
+  
     return () => {
       if (inactivityTimer) {
         clearTimeout(inactivityTimer)
       }
     }
-  }, [resetInactivityTimer, inactivityTimer])
+  }, [resetInactivityTimer, inactivityTimer, lastSearchTerm])
 
   const SkeletonCard = () => (
     <div className="bg-white/10 rounded-lg overflow-hidden animate-pulse">
@@ -435,10 +441,10 @@ export default function Hero() {
             transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
             className="bg-white rounded-lg p-8 max-w-md w-full"
           >
-            <h2 className="text-2xl font-bold mb-4">Are you still there?</h2>
-            <p className="mb-6">We noticed you've been inactive for a while. Would you like to continue your search?</p>
+            <h2 className="text-2xl font-bold mb-4 text-black">Are you still there?</h2>
+            <p className="mb-6 text-black">We noticed you've been inactive for a while. Would you like to continue your search?</p>
             <div className="flex justify-end space-x-4">
-              <Button onClick={() => handleModalResponse(false)} variant="outline">
+              <Button onClick={() => handleModalResponse(false)} variant="outline" className='text-gray-500'>
                 No, I'm done
               </Button>
               <Button onClick={() => handleModalResponse(true)}>
