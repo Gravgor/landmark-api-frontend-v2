@@ -102,6 +102,7 @@ export default function Hero() {
     if(searchTerm === '') {
       timer = setTimeout(() => {
         setShowLandmarks(false)
+        setLastSearchTerm('')
       },10000)
     }
     return () => {
