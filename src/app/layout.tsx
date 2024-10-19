@@ -4,7 +4,7 @@ import "./globals.css";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { AuthProvider } from "@/components/providers/AuthProvider";
-import { UserProvider } from "@/components/providers/UserProvider";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -102,6 +102,7 @@ export default function RootLayout({
       >
         <AuthProvider>
             <main>{children}</main>
+            <GoogleAnalytics gaId="G-1CBNJR36F"/>
             <Footer />
         </AuthProvider>
       </body>
