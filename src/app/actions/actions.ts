@@ -53,7 +53,7 @@ export async function createAccount(formData: FormData) {
         body: JSON.stringify({ userID, planType, plan }),
       }
     )
-
+    console.log(stripeResponse)
     if (!stripeResponse.ok) {
       throw new Error("Failed to create Stripe checkout session")
     }

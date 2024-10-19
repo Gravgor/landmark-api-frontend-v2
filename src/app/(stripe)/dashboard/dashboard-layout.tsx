@@ -25,8 +25,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const menuItems = [
     { icon: Home, label: "Dashboard", href: "/dashboard" },
-    { icon: Globe, label: "API Endpoints", href: "/dashboard/endpoints" },
-    { icon: Code, label: "API Keys", href: "/dashboard/api-keys" },
     { icon: Package, label: "Subscription", href: "/dashboard/subscription" },
     { icon: HelpCircle, label: "Support", href: "/dashboard/support" },
     { icon: Settings, label: "Settings", href: "/dashboard/settings" },
