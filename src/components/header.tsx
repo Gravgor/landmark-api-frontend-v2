@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { MapPin, Menu, X, User } from 'lucide-react'
+import { sendGTMEvent } from '@next/third-parties/google'
 const navItems = [
   { name: 'Features', href: '#features' },
   {name: 'Pricing', href: '#pricing'},
@@ -64,13 +65,15 @@ export default function Header() {
           </nav>
           <div className="flex items-center space-x-4">
             <motion.div
+              className='sm:hidden'
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
             >
               <Link href="#pricing">
                 <Button 
-                  className="bg-blue-500 hover:bg-blue-600 text-white" 
+                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                  onClick={() => sendGTMEvent({event: 'Button Get Started', value: 'User goes to pricing'})}
                 >
                   Get Started
                 </Button>
@@ -85,6 +88,7 @@ export default function Header() {
                 <Button 
                   variant="outline"
                   className="text-black border-white hover:bg-white hover:text-blue-900"
+                  onClick={() => sendGTMEvent({event: 'Button Sign In', value: 'User wanna auth'})}
                 >
                   <User className="mr-2 h-4 w-4" />
                   Sign In
