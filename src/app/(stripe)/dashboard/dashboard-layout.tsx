@@ -35,9 +35,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ]
 
   if (!isAuthenticated || !userData) {
-    setTimeout(() => {
-      router.push('/auth')
-    },3000)
     return <DashboardSkeleton />
   }
 
