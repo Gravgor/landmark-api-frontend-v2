@@ -64,7 +64,7 @@ export default function Header() {
           </nav>
           <div className="flex items-center space-x-4">
             <motion.div
-              className='sm:hidden'
+              className='hidden md:block'
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
@@ -78,6 +78,7 @@ export default function Header() {
               </Link>
             </motion.div>
             <motion.div
+              className='hidden md:block'
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5 }}
