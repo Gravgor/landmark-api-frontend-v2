@@ -115,34 +115,67 @@ export default function PricingSection() {
   }
 
   const PlanCard = useCallback(({ plan, index }: { plan: typeof plans[0], index: number }) => {
-    
+    const cardRef = useRef(null)
+    const { scrollYProgress: cardProgress } = useScroll({
+      target: cardRef,
+      offset: ["start end", "end start"]
+    })
+
+    const cardY = useTransform(cardProgress, [0, 1], [100, -100])
+    const cardOpacity = useTransform(cardProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
+    const cardScale = useTransform(cardProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.8])
+
+    const titleY = useTransform(cardProgress, [0, 1], [20, -20])
+    const priceScale = useTransform(cardProgress, [0, 0.5, 1], [0.9, 1.1, 0.9])
 
     return (
       <motion.div
+        ref={cardRef}
+        style={{ y: cardY, opacity: cardOpacity, scale: cardScale }}
         className={`flex flex-col p-6 bg-gray-800 bg-opacity-75 rounded-lg border ${
           plan.highlighted
             ? "border-blue-500 shadow-lg shadow-blue-500/50"
             : "border-gray-700"
         }`}
       >
-        <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-        <div className="mb-4">
+        <motion.h3 
+          className="text-2xl font-bold mb-2"
+          style={{ y: titleY }}
+        >
+          {plan.name}
+        </motion.h3>
+        <motion.div 
+          className="mb-4"
+          style={{ scale: priceScale }}
+        >
           <span className="text-4xl font-bold">{plan.price}</span>
           {plan.period && <span className="text-gray-400">/{plan.period}</span>}
-        </div>
+        </motion.div>
         <p className="text-gray-400 mb-6">{plan.description}</p>
         <ul className="mb-6 flex-grow">
           {plan.features.map((feature, featureIndex) => (
-            <li key={featureIndex} className="flex items-center mb-2">
+            <motion.li 
+              key={featureIndex} 
+              className="flex items-center mb-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 + featureIndex * 0.1 }}
+            >
               <Check className="h-5 w-5 mr-2 text-green-500" />
               <span>{feature}</span>
-            </li>
+            </motion.li>
           ))}
           {plan.limitations && plan.limitations.map((limitation, limitationIndex) => (
-            <li key={limitationIndex} className="flex items-center mb-2 text-gray-500">
+            <motion.li 
+              key={limitationIndex} 
+              className="flex items-center mb-2 text-gray-500"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 + (plan.features.length + limitationIndex) * 0.1 }}
+            >
               <X className="h-5 w-5 mr-2 text-red-500" />
               <span>{limitation}</span>
-            </li>
+            </motion.li>
           ))}
         </ul>
         <Button
@@ -160,22 +193,38 @@ export default function PricingSection() {
         </Button>
       </motion.div>
     )
-  }, [scrollYProgress, setSelectedPlan, setIsModalOpen])
+  }, [setSelectedPlan, setIsModalOpen])
+
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -50])
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
 
   return (
-    <section ref={sectionRef} id="pricing" className="w-full py-20 bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden">
+    <section 
+      ref={sectionRef} 
+      id="pricing" 
+      className="w-full py-20 bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden"
+    >
       <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-black opacity-75 backdrop-blur-md"></div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Flexible Pricing Plans</h2>
+        <motion.h2 
+          className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12"
+          style={{ y: titleY, opacity: titleOpacity }}
+        >
+          Flexible Pricing Plans
+        </motion.h2>
         <div className="grid gap-8 md:grid-cols-3">
           {plans.map((plan, index) => (
             <PlanCard key={plan.name} plan={plan} index={index} />
           ))}
         </div>
         {message && (
-          <div className="mt-8 p-4 bg-gray-700 rounded-lg text-center max-w-md mx-auto">
+          <motion.div 
+            className="mt-8 p-4 bg-gray-700 rounded-lg text-center max-w-md mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             {message}
-          </div>
+          </motion.div>
         )}
       </div>
 
