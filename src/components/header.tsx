@@ -6,9 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { MapPin, Menu, X, User } from 'lucide-react'
 const navItems = [
+  {name: 'Contribue to Our Project', href: '/submit-landmark'},
   { name: 'Features', href: '#features' },
   {name: 'Pricing', href: '#pricing'},
-  {name: 'Get Started', href: '#cta'}
+  {name: 'Get Started', href: '#cta'},
 ]
 
 export default function Header() {
