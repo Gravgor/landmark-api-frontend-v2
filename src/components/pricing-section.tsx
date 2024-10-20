@@ -62,6 +62,83 @@ const plans = [
   },
 ]
 
+const PlanCard = ({ plan, index, onSelectPlan }: { plan: typeof plans[0], index: number, onSelectPlan: (planName: string) => void }) => {
+  const cardRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"]
+  })
+
+  const cardY = useTransform(scrollYProgress, [0, 1], [100, -100])
+  const cardOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
+  const cardScale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.8])
+  const titleY = useTransform(scrollYProgress, [0, 1], [20, -20])
+  const priceScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1.1, 0.9])
+
+  return (
+    <motion.div
+      ref={cardRef}
+      style={{ y: cardY, opacity: cardOpacity, scale: cardScale }}
+      className={`flex flex-col p-6 bg-gray-800 bg-opacity-75 rounded-lg border ${
+        plan.highlighted
+          ? "border-blue-500 shadow-lg shadow-blue-500/50"
+          : "border-gray-700"
+      }`}
+    >
+      <motion.h3 
+        className="text-2xl font-bold mb-2"
+        style={{ y: titleY }}
+      >
+        {plan.name}
+      </motion.h3>
+      <motion.div 
+        className="mb-4"
+        style={{ scale: priceScale }}
+      >
+        <span className="text-4xl font-bold">{plan.price}</span>
+        {plan.period && <span className="text-gray-400">/{plan.period}</span>}
+      </motion.div>
+      <p className="text-gray-400 mb-6">{plan.description}</p>
+      <ul className="mb-6 flex-grow">
+        {plan.features.map((feature, featureIndex) => (
+          <motion.li 
+            key={featureIndex} 
+            className="flex items-center mb-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 + featureIndex * 0.1 }}
+          >
+            <Check className="h-5 w-5 mr-2 text-green-500" />
+            <span>{feature}</span>
+          </motion.li>
+        ))}
+        {plan.limitations && plan.limitations.map((limitation, limitationIndex) => (
+          <motion.li 
+            key={limitationIndex} 
+            className="flex items-center mb-2 text-gray-500"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 + (plan.features.length + limitationIndex) * 0.1 }}
+          >
+            <X className="h-5 w-5 mr-2 text-red-500" />
+            <span>{limitation}</span>
+          </motion.li>
+        ))}
+      </ul>
+      <Button
+        className={`w-full ${
+          plan.highlighted
+            ? "bg-blue-600 hover:bg-blue-700"
+            : "bg-gray-700 hover:bg-gray-600"
+        }`}
+        onClick={() => onSelectPlan(plan.name)}
+      >
+        {plan.cta}
+      </Button>
+    </motion.div>
+  )
+}
+
 export default function PricingSection() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -96,7 +173,6 @@ export default function PricingSection() {
           if (!stripe) {
             throw new Error('Stripe failed to initialize')
           }
-          console.log(result)
           const { error } = await stripe.redirectToCheckout({
             sessionId: result.sessionId,
           })
@@ -114,86 +190,10 @@ export default function PricingSection() {
     }
   }
 
-  const PlanCard = useCallback(({ plan, index }: { plan: typeof plans[0], index: number }) => {
-    const cardRef = useRef(null)
-    const { scrollYProgress: cardProgress } = useScroll({
-      target: cardRef,
-      offset: ["start end", "end start"]
-    })
-
-    const cardY = useTransform(cardProgress, [0, 1], [100, -100])
-    const cardOpacity = useTransform(cardProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
-    const cardScale = useTransform(cardProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.8])
-
-    const titleY = useTransform(cardProgress, [0, 1], [20, -20])
-    const priceScale = useTransform(cardProgress, [0, 0.5, 1], [0.9, 1.1, 0.9])
-
-    return (
-      <motion.div
-        ref={cardRef}
-        style={{ y: cardY, opacity: cardOpacity, scale: cardScale }}
-        className={`flex flex-col p-6 bg-gray-800 bg-opacity-75 rounded-lg border ${
-          plan.highlighted
-            ? "border-blue-500 shadow-lg shadow-blue-500/50"
-            : "border-gray-700"
-        }`}
-      >
-        <motion.h3 
-          className="text-2xl font-bold mb-2"
-          style={{ y: titleY }}
-        >
-          {plan.name}
-        </motion.h3>
-        <motion.div 
-          className="mb-4"
-          style={{ scale: priceScale }}
-        >
-          <span className="text-4xl font-bold">{plan.price}</span>
-          {plan.period && <span className="text-gray-400">/{plan.period}</span>}
-        </motion.div>
-        <p className="text-gray-400 mb-6">{plan.description}</p>
-        <ul className="mb-6 flex-grow">
-          {plan.features.map((feature, featureIndex) => (
-            <motion.li 
-              key={featureIndex} 
-              className="flex items-center mb-2"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 + featureIndex * 0.1 }}
-            >
-              <Check className="h-5 w-5 mr-2 text-green-500" />
-              <span>{feature}</span>
-            </motion.li>
-          ))}
-          {plan.limitations && plan.limitations.map((limitation, limitationIndex) => (
-            <motion.li 
-              key={limitationIndex} 
-              className="flex items-center mb-2 text-gray-500"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 + (plan.features.length + limitationIndex) * 0.1 }}
-            >
-              <X className="h-5 w-5 mr-2 text-red-500" />
-              <span>{limitation}</span>
-            </motion.li>
-          ))}
-        </ul>
-        <Button
-          className={`w-full ${
-            plan.highlighted
-              ? "bg-blue-600 hover:bg-blue-700"
-              : "bg-gray-700 hover:bg-gray-600"
-          }`}
-          onClick={() => {
-            setSelectedPlan(plan.name)
-            setIsModalOpen(true)
-          }}
-        >
-          {plan.cta}
-        </Button>
-      </motion.div>
-    )
-  }, [setSelectedPlan, setIsModalOpen])
+  const handleSelectPlan = useCallback((planName: string) => {
+    setSelectedPlan(planName)
+    setIsModalOpen(true)
+  }, [])
 
   const titleY = useTransform(scrollYProgress, [0, 1], [0, -50])
   const titleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
@@ -214,7 +214,7 @@ export default function PricingSection() {
         </motion.h2>
         <div className="grid gap-8 md:grid-cols-3">
           {plans.map((plan, index) => (
-            <PlanCard key={plan.name} plan={plan} index={index} />
+            <PlanCard key={plan.name} plan={plan} index={index} onSelectPlan={handleSelectPlan} />
           ))}
         </div>
         {message && (
