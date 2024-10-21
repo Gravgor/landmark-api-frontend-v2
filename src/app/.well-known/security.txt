@@ -1,0 +1,5 @@
+Contact: mailto:security@landmark-api.com
+Preferred-Languages: en, pl
+Policy: https://landmark-api.com/security-policy
+Hiring: https://landmark-api.com/security-jobs
+Expires: 2025-01-01T00:00:00.000Z
