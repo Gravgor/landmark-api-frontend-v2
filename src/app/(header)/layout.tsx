@@ -6,7 +6,7 @@ import { X, User, Mail, Lock } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import Header from '@/components/header'
+import {Navbar} from '@/components/header'
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
@@ -70,8 +70,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className='mt-16'>
+      <Navbar />
+      <main>
         {children}
       </main>
       <AnimatePresence>

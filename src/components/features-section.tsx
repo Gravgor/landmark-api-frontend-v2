@@ -57,7 +57,7 @@ export default function FeaturesSection() {
           <div className="relative mt-12 rounded-lg overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-50"></div>
             <div className="relative bg-black p-4 rounded-lg border border-gray-800">
-              <pre className="text-sm text-gray-300 overflow-x-auto max-h-60 md:max-h-80">
+              <pre className="text-sm text-gray-300 max-h-60 md:max-h-80">
                 <code>{`GET /api/v1/landmarks/name/Mount Fuji
 
 {

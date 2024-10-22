@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { MapPin, Search, Menu, X, ChevronDown, User, Mail, Lock, ChevronLeft } from 'lucide-react'
+import { MapPin, Search, Menu, X, ChevronDown, User, Mail, Lock, ChevronLeft, Building, Globe, Info } from 'lucide-react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import Link from 'next/link'
-import { debounce } from 'lodash'
 import LandmarkModal from './landmark-modal'
 import { useInView } from 'react-intersection-observer'
+import { TbCategory } from "react-icons/tb";
+
 
 interface Image {
   image_url: string
@@ -61,6 +61,15 @@ interface LandmarkResponse {
     total: number
   }
 }
+
+const searchTypes = [
+  { type: 'city', icon: Building },
+  { type: 'country', icon: Globe },
+  { type: 'category', icon: TbCategory },
+  { type: 'name', icon: MapPin }
+] as const
+
+type SearchType = typeof searchTypes[number]['type']
 
 export default function Hero() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -168,6 +177,10 @@ export default function Hero() {
       const nextIndex = (currentIndex + 1) % types.length
       setSearchType(types[nextIndex])
     }
+  }
+
+  const changeSearchType = (type: SearchType) => {
+    setSearchType(type)
   }
 
   const resetInactivityTimer = useCallback(() => {
@@ -285,7 +298,7 @@ export default function Hero() {
                   animate={{ opacity: 1, y: -85 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: "easeInOut" }}
-                  className="text-2xl font-semibold mb-4 text-center"
+                  className="text-4xl font-bold text-center mb-8"
                 >
                   {isAnimating ? 'Searching...' : 
                     `Explore landmarks ${searchType === 'city' ? `in ${lastSearchTerm}` :
@@ -298,26 +311,48 @@ export default function Hero() {
             </AnimatePresence>
 
             <motion.div
-              className="max-w-xl mx-auto mt-2"
-              initial={{ y: 0 }}
-              animate={{ y: isAnimating || showLandmarks ? -80 : 0 }}
-              transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: "easeInOut" }}
-            >
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder={`Search landmarks by ${searchType}...`}
-                  className="w-full pl-10 pr-4 py-3 rounded-full bg-white/10 border-white/20 text-white placeholder-gray-400"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              </div>
-              <p className="text-sm text-gray-400 mt-2">
-                Tip: Press Tab to change search type ({searchType}). Press Enter to search.
-              </p>
-            </motion.div>
+          className="max-w-3xl mx-auto mt-12"
+          initial={{ y: 0 }}
+          animate={{ y: isAnimating || showLandmarks ? -100 : 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder={`Search landmarks by ${searchType}...`}
+              className="w-full pl-12 pr-32 py-6 rounded-full bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-lg"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeyPress}
+            />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 hidden md:flex space-x-2">
+              {searchTypes.map(({ type, icon: Icon }) => (
+                <Button
+                  key={type}
+                  variant="ghost"
+                  size="icon"
+                  className={`rounded-full p-2 ${searchType === type ? 'bg-blue-500 text-white' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                  onClick={() => changeSearchType(type)}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="sr-only">{type}</span>
+                </Button>
+              ))}
+              <Button
+                className="rounded-full px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-300"
+                onClick={() => {
+                  handleSearch(searchTerm)
+                }}
+              >
+                Search
+              </Button>
+            </div>
+          </div>
+          <p className="hidden md:block text-sm text-gray-400 mt-2 text-center">
+            Click on the icons to change search type. Current: {searchType}
+          </p>
+        </motion.div>
 
             <AnimatePresence>
               {(isAnimating || isLoading) && (
@@ -377,6 +412,7 @@ export default function Hero() {
                         <div className="p-4">
                           <h3 className="text-xl font-semibold mb-2">{landmark.name}</h3>
                           <p className="text-sm text-gray-300">{landmark.description.slice(0, 100)}...</p>
+                         
                         </div>
                       </motion.div>
                     ))

@@ -1,75 +1,62 @@
 "use client"
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import * as React from "react"
+import Link from "next/link"
+import { MapPin, Menu, X, User, Search, ChevronDown } from "lucide-react"
+import { motion } from "framer-motion"
+
 import { Button } from "@/components/ui/button"
-import { MapPin, Menu, X, User } from 'lucide-react'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Input } from "@/components/ui/input"
+
 const navItems = [
-  {name: 'Contribue to Our Project', href: '/submit-landmark'},
-  { name: 'Features', href: '#features' },
-  {name: 'Pricing', href: '#pricing'},
-  {name: 'Get Started', href: '#cta'},
+  { 
+    name: "Products", 
+    href: "#products",
+    subItems: [
+      { name: "Landmark API", href: "/pricing" },
+    ]
+  },
+  { 
+    name: "Resources", 
+    href: "#resources",
+    subItems: [
+      { name: "Documentation", href: "/docs" },
+      { name: "Contribute", href: "/submit-landmark" },
+    ]
+  },
 ]
 
-export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const handleResize = () => setIsMenuOpen(false)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
+export function Navbar() {
   return (
     <motion.header 
-      className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-900 to-purple-900 shadow-lg"
+      className="sticky top-0 z-50 w-full bg-gradient-to-r from-blue-900 to-purple-900 shadow-lg"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <motion.div
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
-            >
-              <MapPin className="h-8 w-8 text-blue-400" />
-            </motion.div>
-            <motion.span 
-              className="font-bold text-xl text-white"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              Landmark API
-            </motion.span>
-          </Link>
-          <nav className="hidden md:flex space-x-8">
-            {navItems.map((item, index) => (
-              <motion.div
-                key={item.name}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link
-                  href={item.href}
-                  className="text-sm font-medium text-white hover:text-blue-300 transition-colors"
-                >
-                  {item.name}
-                </Link>
-              </motion.div>
-            ))}
-          </nav>
-          <div className="flex items-center space-x-4">
-            <motion.div
-              className='hidden md:block'
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-            >
+        <div className="flex h-16 items-center justify-between">
+          <MainNav />
+
+          {/* This div wraps MobileNav and pushes it to the right in mobile view */}
+          <div className="ml-auto md:hidden">
+            <MobileNav />
+          </div>
+
+          <div className="flex flex-1 items-center justify-end space-x-4">
+            <div className="w-full flex-1 md:w-auto md:flex-none">
+              <CommandMenu />
+            </div>
+            <nav className="hidden md:flex items-center space-x-4">
               <Link href="#pricing">
                 <Button 
                   className="bg-blue-500 hover:bg-blue-600 text-white"
@@ -77,86 +64,150 @@ export default function Header() {
                   Get Started
                 </Button>
               </Link>
-            </motion.div>
-            <motion.div
-              className='hidden md:block'
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-            >
               <Link href="/auth">
                 <Button 
                   variant="outline"
-                  className="text-black border-white hover:bg-white hover:text-blue-900"
+                  className="border-white hover:bg-white text-blue-500 hover:text-blue-900"
                 >
                   <User className="mr-2 h-4 w-4" />
                   Sign In
                 </Button>
               </Link>
-            </motion.div>
-            <motion.div
-              className="md:hidden"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/10"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <Menu className="h-6 w-6" />
-                )}
-              </Button>
-            </motion.div>
+            </nav>
           </div>
         </div>
       </div>
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div 
-            className="md:hidden bg-gradient-to-r from-blue-900 to-purple-900"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Link
-                    href={item.href}
-                    className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </motion.div>
-              ))}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: navItems.length * 0.1 }}
-              >
-                <Link
-                  href="/auth"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 transition-colors"
-                >
-                  Sign In
-                </Link>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.header>
+  );
+}
+
+
+function MainNav() {
+  return (
+    <div className="flex items-center">
+      <Link href="/" className="flex items-center space-x-2">
+        <motion.div
+          whileHover={{ rotate: 360 }}
+          transition={{ duration: 0.5 }}
+        >
+          <MapPin className="h-8 w-8 text-blue-400" />
+        </motion.div>
+        <motion.span 
+          className="font-bold text-xl text-white"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          Landmark API
+        </motion.span>
+      </Link>
+      <NavigationMenu className="hidden md:flex ml-8">
+        <NavigationMenuList>
+          {navItems.map((item, index) => (
+            <NavigationMenuItem key={item.name}>
+              {item.subItems ? (
+                <NavigationMenuTrigger className="bg-transparent text-white hover:bg-white/10 hover:text-blue-300">
+                  {item.name}
+                </NavigationMenuTrigger>
+              ) : (
+                <Link href={item.href} legacyBehavior passHref>
+                  <NavigationMenuLink className="bg-transparent text-white hover:bg-white/10 hover:text-blue-300 px-3 py-2 rounded-md transition-colors">
+                    {item.name}
+                  </NavigationMenuLink>
+                </Link>
+              )}
+              {item.subItems && (
+                <NavigationMenuContent>
+                  <ul className="grid w-[200px] gap-3 p-4 bg-white rounded-md shadow-lg">
+                    {item.subItems.map((subItem) => (
+                      <li key={subItem.name}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href={subItem.href}
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-blue-50 hover:text-blue-900"
+                          >
+                            <div className="text-sm font-medium leading-none">{subItem.name}</div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              )}
+            </NavigationMenuItem>
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
+  )
+}
+
+function MobileNav() {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          variant="ghost"
+          className="px-0 text-white hover:bg-white/10 md:hidden"
+        >
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Toggle Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-[300px] bg-gradient-to-r from-blue-900 to-purple-900">
+        <Link href="/" className="flex items-center">
+          <MapPin className="mr-2 h-6 w-6 text-blue-400" />
+          <span className="font-bold text-xl text-white">Landmark API</span>
+        </Link>
+        <nav className="mt-8 flex flex-col space-y-3">
+          {navItems.map((item) => (
+            <div key={item.name}>
+              {item.subItems ? (
+                <div className="space-y-3">
+                  <div className="text-lg font-semibold text-white">{item.name}</div>
+                  {item.subItems.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className="block text-sm text-white/80 hover:text-blue-300 transition-colors pl-4"
+                    >
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Link
+                  href={item.href}
+                  className="block text-lg font-semibold text-white hover:text-blue-300 transition-colors"
+                >
+                  {item.name}
+                </Link>
+              )}
+            </div>
+          ))}
+          <Link
+            href="/auth"
+            className="block text-lg font-semibold text-white hover:text-blue-300 transition-colors"
+          >
+            Sign In
+          </Link>
+        </nav>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+function CommandMenu() {
+  return (
+    <div className="relative w-full md:w-auto hidden md:block">
+      <Search className="absolute left-2 top-2.5 h-4 w-4 text-white/50" />
+      <Input 
+        placeholder="Search documentation..."
+        className="pl-8 bg-white/10 border-white/20 text-white placeholder-white/50 focus:bg-white/20 focus:border-white/30"
+      />
+      <kbd className="pointer-events-none absolute right-2 top-2.5 hidden h-5 select-none items-center gap-1 rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px] font-medium text-white/50 opacity-100 sm:flex">
+        <span className="text-xs">⌘</span>K
+      </kbd>
+    </div>
   )
 }
