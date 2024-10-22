@@ -107,7 +107,7 @@ export default function Dashboard() {
           </motion.div>
         </div>
         <motion.div
-          className="bg-gray-900 rounded-lg p-6 shadow-xl border border-blue-500/20 mt-2"
+          className="bg-gray-900 rounded-lg p-6 shadow-xl border border-blue-500/20 mt-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}

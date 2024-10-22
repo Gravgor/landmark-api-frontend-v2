@@ -117,8 +117,6 @@ export default function Hero() {
       setIsLoading(true)
       setError(null)
       try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1500))
 
         const endpoint = `/landmarks/${searchType}/${encodeURIComponent(query)}?offset=${offsetValue}&limit=10`
         const response = await fetch(`https://api.landmark-api.com/api/v1${endpoint}`, {
