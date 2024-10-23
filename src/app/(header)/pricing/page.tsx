@@ -147,6 +147,7 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
+              <Link href={`/auth?plan=${plan.name}`}>
               <Button
                 className={`w-full ${
                   plan.highlighted
@@ -156,6 +157,7 @@ export default function PricingPage() {
               >
                 {plan.cta}
               </Button>
+              </Link>
             </motion.div>
           ))}
         </div>

@@ -57,10 +57,21 @@ export default function EnhancedAuthPage() {
   }, [])
 
   const loginSearchParam = searchParams.get("login")
+  const signUpSearchParams = searchParams.get("plan")
 
   useEffect(() => {
     setIsSignUp(false)
   }, [loginSearchParam])
+
+  useEffect(() => {
+    setIsSignUp(true);
+  
+    if (signUpSearchParams === "Pro") {
+      setSelectedPlan('Pro');
+    } else {
+      setSelectedPlan('Free');
+    }
+  }, [signUpSearchParams]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
