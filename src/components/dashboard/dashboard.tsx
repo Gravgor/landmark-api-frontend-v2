@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Globe, Search, Code, Users, BarChart2, Package, Clock, LogOut, ChevronDown, Bell, Settings, Copy, Eye, EyeOff, Key, CreditCard } from 'lucide-react'
 import { Button } from "@/components/ui/button"
@@ -42,7 +42,8 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black text-white">
       <main className="container mx-auto px-4 py-8">
-        <motion.h1 
+       <Suspense>
+       <motion.h1 
           className="text-4xl font-bold mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,6 +51,7 @@ export default function Dashboard() {
         >
           Welcome back, <span className="text-blue-400">{userData.name}</span>! 🌍
         </motion.h1>
+       </Suspense>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <DashboardCard
