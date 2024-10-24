@@ -2,7 +2,6 @@
 
 import React, { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { DashboardSkeleton } from '../dashboard/dashboard-skeleton'
 import LoadingSpinner from '../LoadingSpinner'
 
 interface AuthContextType {

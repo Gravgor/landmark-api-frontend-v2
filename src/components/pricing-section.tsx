@@ -1,21 +1,21 @@
-'use client'
+"use client"
+import { useState, useRef, useCallback } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { Check, X, User, Mail, Lock, Zap, Shield, Cloud, Clock, Database, HeartHandshake } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { createAccount } from '@/app/actions/actions';
 
-import { useState, useRef, useCallback } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { Check, X, User, Mail, Lock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { createAccount } from '@/app/actions/actions'
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const plans = [
   {
     name: "Free",
     price: "$0",
-    description: "For small projects and testing",
+    icon: Database,
+    description: "Perfect for testing and small projects",
     features: [
       "100 requests / day",
       "Basic landmark info",
@@ -28,12 +28,15 @@ const plans = [
     ],
     cta: "Get Started",
     highlighted: false,
+    gradient: "from-gray-600 to-gray-700",
+    iconColor: "text-gray-400"
   },
   {
     name: "Pro",
     price: "$49",
+    icon: Zap,
     period: "per month",
-    description: "For growing applications",
+    description: "Ideal for growing applications",
     features: [
       "10,000 requests / day",
       "Advanced landmark details",
@@ -44,10 +47,13 @@ const plans = [
     ],
     cta: "Upgrade to Pro",
     highlighted: true,
+    gradient: "from-blue-600 to-purple-600",
+    iconColor: "text-blue-400"
   },
   {
     name: "Enterprise",
     price: "Custom",
+    icon: HeartHandshake,
     description: "For large-scale applications",
     features: [
       "Unlimited requests",
@@ -59,247 +65,300 @@ const plans = [
     ],
     cta: "Contact Sales",
     highlighted: false,
+    gradient: "from-purple-600 to-pink-600",
+    iconColor: "text-purple-400"
   },
-]
+];
 
 const PlanCard = ({ plan, index, onSelectPlan }: { plan: typeof plans[0], index: number, onSelectPlan: (planName: string) => void }) => {
-  const cardRef = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: cardRef,
-    offset: ["start end", "end start"]
-  })
-
-  const cardY = useTransform(scrollYProgress, [0, 1], [100, -100])
-  const cardOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
-  const cardScale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.8])
-  const titleY = useTransform(scrollYProgress, [0, 1], [20, -20])
-  const priceScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1.1, 0.9])
-
+  const Icon = plan.icon;
+  
   return (
     <motion.div
-      ref={cardRef}
-      style={{ y: cardY, opacity: cardOpacity, scale: cardScale }}
-      className={`flex flex-col p-6 bg-gray-800 bg-opacity-75 rounded-lg border ${
-        plan.highlighted
-          ? "border-blue-500 shadow-lg shadow-blue-500/50"
-          : "border-gray-700"
-      }`}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      viewport={{ once: true }}
+      className="relative group"
     >
-      <motion.h3 
-        className="text-2xl font-bold mb-2"
-        style={{ y: titleY }}
-      >
-        {plan.name}
-      </motion.h3>
-      <motion.div 
-        className="mb-4"
-        style={{ scale: priceScale }}
-      >
-        <span className="text-4xl font-bold">{plan.price}</span>
-        {plan.period && <span className="text-gray-400">/{plan.period}</span>}
-      </motion.div>
-      <p className="text-gray-400 mb-6">{plan.description}</p>
-      <ul className="mb-6 flex-grow">
-        {plan.features.map((feature, featureIndex) => (
-          <motion.li 
-            key={featureIndex} 
-            className="flex items-center mb-2"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 + featureIndex * 0.1 }}
-          >
-            <Check className="h-5 w-5 mr-2 text-green-500" />
-            <span>{feature}</span>
-          </motion.li>
-        ))}
-        {plan.limitations && plan.limitations.map((limitation, limitationIndex) => (
-          <motion.li 
-            key={limitationIndex} 
-            className="flex items-center mb-2 text-gray-500"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 + (plan.features.length + limitationIndex) * 0.1 }}
-          >
-            <X className="h-5 w-5 mr-2 text-red-500" />
-            <span>{limitation}</span>
-          </motion.li>
-        ))}
-      </ul>
-      <Button
-        className={`w-full ${
+      <div 
+        className={`h-full flex flex-col p-8 rounded-2xl border transition-all duration-300 ${
           plan.highlighted
-            ? "bg-blue-600 hover:bg-blue-700"
-            : "bg-gray-700 hover:bg-gray-600"
+            ? "bg-gradient-to-br from-blue-900/40 to-purple-900/40 border-blue-500/50 hover:border-blue-400"
+            : "bg-gray-900/40 border-gray-800 hover:border-gray-700"
         }`}
-        onClick={() => onSelectPlan(plan.name)}
       >
-        {plan.cta}
-      </Button>
+        <div className="mb-6">
+          <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${plan.gradient} mb-4`}>
+            <Icon className={`w-6 h-6 ${plan.iconColor}`} />
+          </div>
+          <h3 className="text-2xl font-bold mb-2 text-white" >{plan.name}</h3>
+          <div className="flex items-baseline mb-4 ">
+            <span className="text-4xl font-bold text-white">{plan.price}</span>
+            {plan.period && (
+              <span className="ml-2 text-gray-400 text-sm">{plan.period}</span>
+            )}
+          </div>
+          <p className="text-gray-400">{plan.description}</p>
+        </div>
+
+        <div className="flex-grow">
+          <div className="space-y-4">
+            {plan.features.map((feature, featureIndex) => (
+              <motion.div
+                key={featureIndex}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 + featureIndex * 0.1 }}
+                className="flex items-center"
+              >
+                <div className="flex-shrink-0 w-5 h-5 mr-3">
+                  <Check className="w-5 h-5 text-green-500" />
+                </div>
+                <span className="text-gray-300">{feature}</span>
+              </motion.div>
+            ))}
+            {plan.limitations?.map((limitation, limitIndex) => (
+              <motion.div
+                key={limitIndex}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 + (plan.features.length + limitIndex) * 0.1 }}
+                className="flex items-center"
+              >
+                <div className="flex-shrink-0 w-5 h-5 mr-3">
+                  <X className="w-5 h-5 text-red-500" />
+                </div>
+                <span className="text-gray-500">{limitation}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        <Button
+          className={`mt-8 w-full ${
+            plan.highlighted
+              ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              : "bg-gray-800 hover:bg-gray-700"
+          }`}
+          onClick={() => onSelectPlan(plan.name)}
+        >
+          {plan.cta}
+        </Button>
+      </div>
     </motion.div>
-  )
-}
+  );
+};
+
+const SignUpModal = ({ 
+  isOpen, 
+  onClose, 
+  selectedPlan,
+  onSubmit,
+  isLoading 
+}: { 
+  isOpen: boolean;
+  onClose: () => void;
+  selectedPlan: string | null;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+  isLoading: boolean;
+}) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div 
+            className="bg-gray-900 text-white rounded-2xl p-8 max-w-md w-full border border-gray-800"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ type: "spring", damping: 15 }}
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Sign Up for {selectedPlan}</h2>
+              <Button variant="ghost" size="icon" onClick={onClose}>
+                <X className="w-6 h-6" />
+              </Button>
+            </div>
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="pl-10 bg-gray-800 border-gray-700"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 bg-gray-800 border-gray-700"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 bg-gray-800 border-gray-700"
+                    required
+                  />
+                </div>
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Processing...' : 'Sign Up'}
+              </Button>
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 export default function PricingSection() {
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState('')
-
-  const sectionRef = useRef(null)
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  
+  const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
-  })
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setMessage('')
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage('');
 
-    const formData = new FormData()
-    formData.append('name', name)
-    formData.append('email', email)
-    formData.append('password', password)
-    formData.append('plan', selectedPlan?.toLowerCase() || 'free')
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    formData.append('plan', selectedPlan?.toLowerCase() || 'free');
 
     try {
-      const result = await createAccount(formData)
+      const result = await createAccount(formData);
 
       if (result.success) {
-          const stripe = await stripePromise
-          if (!stripe) {
-            throw new Error('Stripe failed to initialize')
-          }
-          const { error } = await stripe.redirectToCheckout({
-            sessionId: result.sessionId,
-          })
+        const stripe = await stripePromise;
+        if (!stripe) {
+          throw new Error('Stripe failed to initialize');
+        }
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: result.sessionId,
+        });
 
-          if (error) {
-            throw new Error(error.message)
-          }
+        if (error) {
+          throw new Error(error.message);
+        }
       } else {
-        throw new Error(result.message || 'An error occurred during account creation.')
+        throw new Error(result.message || 'An error occurred during account creation.');
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'An unexpected error occurred.')
+      setMessage(error instanceof Error ? error.message : 'An unexpected error occurred.');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleSelectPlan = useCallback((planName: string) => {
-    setSelectedPlan(planName)
-    setIsModalOpen(true)
-  }, [])
+    setSelectedPlan(planName);
+    setIsModalOpen(true);
+  }, []);
 
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, -50])
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.2], [100, 0]);
 
   return (
     <section 
-      ref={sectionRef} 
+      ref={sectionRef}
       id="pricing" 
-      className="w-full py-20 bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden"
+      className="relative w-full py-24 overflow-hidden bg-gradient-to-b from-gray-900 via-gray-900 to-black"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-black opacity-75 backdrop-blur-md"></div>
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <motion.h2 
-          className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12"
-          style={{ y: titleY, opacity: titleOpacity }}
-        >
-          Flexible Pricing Plans
-        </motion.h2>
-        <div className="grid gap-8 md:grid-cols-3">
+      <motion.div 
+        className="container mx-auto px-4"
+        style={{ opacity, y }}
+      >
+        <div className="text-center mb-16">
+          <motion.h2 
+            className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            Choose Your Plan
+          </motion.h2>
+          <motion.p 
+            className="text-xl text-gray-400 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Start with our free tier and scale as you grow
+          </motion.p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-3 max-w-7xl mx-auto">
           {plans.map((plan, index) => (
-            <PlanCard key={plan.name} plan={plan} index={index} onSelectPlan={handleSelectPlan} />
+            <PlanCard 
+              key={plan.name} 
+              plan={plan} 
+              index={index} 
+              onSelectPlan={handleSelectPlan} 
+            />
           ))}
         </div>
+
         {message && (
           <motion.div 
-            className="mt-8 p-4 bg-gray-700 rounded-lg text-center max-w-md mx-auto"
+            className="mt-8 p-4 bg-red-900/50 border border-red-500/50 rounded-lg text-center max-w-md mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             {message}
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div 
-              className="bg-white text-gray-900 rounded-lg p-8 max-w-md w-full"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", damping: 15 }}
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Sign Up for {selectedPlan}</h2>
-                <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
-                  <X className="w-6 h-6" />
-                </Button>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <Input
-                      id="name"
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Processing...' : 'Sign Up'}
-                </Button>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <SignUpModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedPlan={selectedPlan}
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+      />
     </section>
-  )
+  );
 }
