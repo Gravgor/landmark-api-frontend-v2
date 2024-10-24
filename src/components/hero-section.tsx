@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { MapPin, Search, Menu, X, ChevronDown, User, Mail, Lock, ChevronLeft, Building, Globe, Info } from 'lucide-react'
+import { MapPin, Search, Menu, X, ChevronDown, User, Mail, Lock, ChevronLeft, Building, Globe, Info, Badge, Cloud, Database, Zap } from 'lucide-react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -63,10 +63,10 @@ interface LandmarkResponse {
 }
 
 const searchTypes = [
-  { type: 'city', icon: Building },
-  { type: 'country', icon: Globe },
-  { type: 'category', icon: TbCategory },
-  { type: 'name', icon: MapPin }
+  { type: 'city', icon: Building, label: 'Search by City' },
+  { type: 'country', icon: Globe, label: 'Search by Country' },
+  { type: 'category', icon: TbCategory, label: 'Search by Category' },
+  { type: 'name', icon: MapPin, label: 'Search by Name' }
 ] as const
 
 type SearchType = typeof searchTypes[number]['type']
@@ -247,7 +247,7 @@ export default function Hero() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
       <main className="flex-grow">
         <motion.section 
           className="relative min-h-screen flex items-center justify-center overflow-hidden py-20 sm:py-32"
@@ -256,9 +256,10 @@ export default function Hero() {
           exit={{ opacity: 0 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
         >
+          {/* Tech-focused background pattern */}
           <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-900 to-purple-900 opacity-50" />
-            <div className="absolute inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center opacity-10" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(24,24,27,0.7),rgba(24,24,27,0.9))]" />
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGgtNnYxMmgtNnYtNmgtNnYxMmg2djZoNnYtNmg2eiIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHN0cm9rZS13aWR0aD0iMiIvPjwvZz48L3N2Zz4=')] opacity-5" />
           </div>
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <AnimatePresence mode="wait">
@@ -266,27 +267,58 @@ export default function Hero() {
                 <motion.div
                   key="hero"
                   className="text-center space-y-8 mb-12"
-                  {...fadeInUp}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
                 >
-                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tighter">
-                    Discover the World's
-                    <br />
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                      Landmarks
-                    </span>
-                  </h1>
-                  <p className="max-w-2xl mx-auto text-xl sm:text-2xl text-gray-300 mt-4">
-                    Access global landmark data with our powerful RESTful API service. Build amazing location-based experiences.
-                  </p>
-                  <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                    <Link href={"#pricing"}>
-                      <Button className="w-full sm:w-auto text-lg px-8 py-3 bg-blue-600 hover:bg-blue-700">
-                        Get Started
+                  <div className="space-y-4">
+                    <div className="flex justify-center space-x-4 mb-6">
+                      {['Go', 'PostgreSQL', 'Redis', 'Next.js'].map((tech) => (
+                        <Badge key={tech} className="px-3 py-1 text-white bg-slate-700/50">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                    <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-none tracking-tight">
+                      Global Landmark
+                      <br />
+                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                        Data API
+                      </span>
+                    </h1>
+                    <p className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-400 mt-6">
+                      Access comprehensive landmark data through our high-performance API. 
+                      Serving 10,000+ daily requests with 99.99% uptime.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
+                    <div className="p-6 rounded-lg bg-slate-800/50 backdrop-blur-sm border border-slate-700">
+                      <Database className="h-8 w-8 text-blue-400 mb-4" />
+                      <h3 className="text-lg font-semibold mb-2 text-blue-400">Rich Data</h3>
+                      <p className="text-slate-400 text-sm">Geolocation, history, and real-time updates</p>
+                    </div>
+                    <div className="p-6 rounded-lg bg-slate-800/50 backdrop-blur-sm border border-slate-700">
+                      <Cloud className="h-8 w-8 text-purple-400 mb-4" />
+                      <h3 className="text-lg font-semibold mb-2 text-purple-400">High Scale</h3>
+                      <p className="text-slate-400 text-sm">Redis-cached responses for lightning speed</p>
+                    </div>
+                    <div className="p-6 rounded-lg bg-slate-800/50 backdrop-blur-sm border border-slate-700">
+                      <Zap className="h-8 w-8 text-pink-400 mb-4" />
+                      <h3 className="text-lg font-semibold mb-2 text-pink-400">Live Updates</h3>
+                      <p className="text-slate-400 text-sm">Weather, crowds, and transport info</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-12">
+                    <Link href="#pricing">
+                      <Button className="w-full sm:w-auto text-lg px-8 py-3 bg-blue-500 hover:bg-blue-600">
+                        Get API Key
                       </Button>
                     </Link>
-                    <Link href={"/docs"}>
-                      <Button variant="outline" className="w-full sm:w-auto text-lg px-8 py-3 text-black">
-                        View Documentation
+                    <Link href="/docs">
+                      <Button variant="outline" className="w-full sm:w-auto text-lg px-8 py-3 border-slate-700 hover:bg-slate-800">
+                        View Docs
                       </Button>
                     </Link>
                   </div>
@@ -294,11 +326,10 @@ export default function Hero() {
               ) : (
                 <motion.h2
                   key="explore"
+                  className="text-3xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: -85 }}
                   exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: "easeInOut" }}
-                  className="text-4xl font-bold text-center mb-8"
                 >
                   {isAnimating ? 'Searching...' : 
                     `Explore landmarks ${searchType === 'city' ? `in ${lastSearchTerm}` :
@@ -309,50 +340,47 @@ export default function Hero() {
                 </motion.h2>
               )}
             </AnimatePresence>
-
             <motion.div
-          className="max-w-3xl mx-auto mt-12"
-          initial={{ y: 0 }}
-          animate={{ y: isAnimating || showLandmarks ? -100 : 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder={`Search landmarks by ${searchType}...`}
-              className="w-full pl-12 pr-32 py-6 rounded-full bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-lg"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleKeyPress}
-            />
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 hidden md:flex space-x-2">
-              {searchTypes.map(({ type, icon: Icon }) => (
-                <Button
-                  key={type}
-                  variant="ghost"
-                  size="icon"
-                  className={`rounded-full p-2 ${searchType === type ? 'bg-blue-500 text-white' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
-                  onClick={() => changeSearchType(type)}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span className="sr-only">{type}</span>
-                </Button>
-              ))}
-              <Button
-                className="rounded-full px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-300"
-                onClick={() => {
-                  handleSearch(searchTerm)
-                }}
-              >
-                Search
-              </Button>
-            </div>
-          </div>
-          <p className="hidden md:block text-sm text-gray-400 mt-2 text-center">
-            Click on the icons to change search type. Current: {searchType}
-          </p>
-        </motion.div>
+              className="max-w-3xl mx-auto mt-12"
+              initial={{ y: 0 }}
+              animate={{ y: isAnimating || showLandmarks ? -100 : 0 }}
+            >
+              <div className="relative group">
+                <Input
+                  type="text"
+                  placeholder={`Search landmarks by ${searchType}...`}
+                  className="w-full pl-12 pr-32 py-6 rounded-xl bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-slate-400" />
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 hidden md:flex space-x-2">
+                  {searchTypes.map(({ type, icon: Icon }) => (
+                    <Button
+                      key={type}
+                      variant="ghost"
+                      size="icon"
+                      className={`rounded-lg p-2 ${
+                        searchType === type 
+                          ? 'bg-blue-500 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                      onClick={() => changeSearchType(type)}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <span className="sr-only">{type}</span>
+                    </Button>
+                  ))}
+                  <Button
+                    className="rounded-lg px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white"
+                    onClick={() => handleSearch(searchTerm)}
+                  >
+                    Search
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
 
             <AnimatePresence>
               {(isAnimating || isLoading) && (
@@ -381,52 +409,38 @@ export default function Hero() {
                 </motion.div>
               )}
 
-              {showLandmarks && !selectedLandmark && !error && !isLoading && (
+{showLandmarks && !selectedLandmark && !error && !isLoading && (
                 <motion.div
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8"
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: -80 }}
                   exit={{ opacity: 0, y: 50 }}
-                  transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: 0.2, ease: "easeInOut" }}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8"
                 >
-                  {landmarks.length > 0 ? (
-                    landmarks.map((landmark, index) => (
-                      <motion.div
-                        key={landmark.id}
-                        ref={index === landmarks.length - 1 ? lastLandmarkRef : null}
-                        initial={{ opacity:  0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: index * 0.1 }}
-                        whileHover={{ scale: shouldReduceMotion ? 1 : 1.05 }}
-                        whileTap={{ scale: shouldReduceMotion ? 1 : 0.95 }}
-                        className="bg-white/10 rounded-lg overflow-hidden cursor-pointer"
-                        onClick={() => setSelectedLandmark(landmark)}
-                        layout
-                      >
+                  {landmarks.map((landmark, index) => (
+                    <motion.div
+                      key={landmark.id}
+                      ref={index === landmarks.length - 1 ? lastLandmarkRef : null}
+                      className="group relative bg-slate-800/50 backdrop-blur-sm rounded-lg overflow-hidden cursor-pointer border border-slate-700 hover:border-blue-500 transition-colors"
+                      onClick={() => setSelectedLandmark(landmark)}
+                      whileHover={{ scale: shouldReduceMotion ? 1 : 1.02 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <div className="relative h-48">
                         <img 
                           src={landmark.images[0]?.image_url || landmark.image_url} 
-                          alt={landmark.name} 
-                          className="w-full h-48 object-cover"
+                          alt={landmark.name}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
                         />
-                        <div className="p-4">
-                          <h3 className="text-xl font-semibold mb-2">{landmark.name}</h3>
-                          <p className="text-sm text-gray-300">{landmark.description.slice(0, 100)}...</p>
-                         
-                        </div>
-                      </motion.div>
-                    ))
-                  ) : (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
-                      className="col-span-full text-center text-gray-400"
-                    >
-                      <p>No landmarks found for "{lastSearchTerm}". Try another search.</p>
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-xl font-semibold mb-2 text-white">{landmark.name}</h3>
+                        <p className="text-sm text-slate-300">{landmark.description.slice(0, 100)}...</p>
+                      </div>
                     </motion.div>
-                  )}
+                  ))}
                 </motion.div>
               )}
             </AnimatePresence>

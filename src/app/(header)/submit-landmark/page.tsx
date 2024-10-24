@@ -1,19 +1,19 @@
-'use client'
+//@ts-nocheck
+"use client"
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2, AlertCircle, CheckCircle2, MapPin, Clock, Ticket, History, Users, Info } from "lucide-react";
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Loader2, AlertCircle, CheckCircle2, MapPin } from "lucide-react"
-
-const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -32,31 +32,30 @@ const schema = z.object({
   visitor_tips: z.string().min(10, 'Visitor tips must be at least 10 characters'),
   accessibility_info: z.string().min(1, 'Accessibility info is required'),
   photos: z.any(),
-})
-
-type FormData = z.infer<typeof schema>
+});
 
 export default function LandmarkSubmissionForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
-  const [files, setFiles] = useState<File[]>([])
-  const { register, handleSubmit, control, formState: { errors }, reset } = useForm<FormData>({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [files, setFiles] = useState([]);
+  
+  const { register, handleSubmit, control, formState: { errors }, reset } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       opening_hours: days.reduce((acc, day) => ({ ...acc, [day]: '9:00 AM - 5:00 PM' }), {}),
       ticket_prices: { Adult: '$10', Child: '$5' },
     },
-  })
+  });
 
-  const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true)
-    setSubmitStatus('idle')
-    setErrorMessage('')
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
 
     try {
-      const imageUrls = await uploadPhotos()
-      const landmarkResponse = await fetch(`https://api.landmark-api.com/api/v1/contribution/submit-landmark`, {
+      const imageUrls = await uploadPhotos();
+      const response = await fetch('https://api.landmark-api.com/api/v1/contribution/submit-landmark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -68,7 +67,6 @@ export default function LandmarkSubmissionForm() {
             country: data.country,
             city: data.city,
             category: data.category,
-            image_urls: imageUrls,
           },
           landmark_detail: {
             opening_hours: data.opening_hours,
@@ -79,169 +77,256 @@ export default function LandmarkSubmissionForm() {
           },
           image_urls: imageUrls,
         }),
-      })
-
-      if (!landmarkResponse.ok) {
-        throw new Error('Failed to submit landmark data')
-      }
-
-      setSubmitStatus('success')
-      reset()
-    } catch (error) {
-      setSubmitStatus('error')
-      setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files))
-    }
-  }
-
-
-  const uploadPhotos= async (): Promise<string[]> => {
-    if (files.length === 0) return []
-
-    const formData = new FormData()
-    files.forEach((file) => {
-      formData.append('images', file)
-    })
-      const response = await fetch(`https://api.landmark-api.com/api/v1/contribution/submit-photo`, {
-        method: 'POST',
-        body: formData,
       });
-  
-      if (!response.ok) {
-        throw new Error('Failed to upload photo');
-      }
-  
-      const result = await response.json();
-      return result.urls;
-    }  
-  
+
+      if (!response.ok) throw new Error('Failed to submit landmark data');
+      setSubmitStatus('success');
+      reset();
+    } catch (error) {
+      setSubmitStatus('error');
+      setErrorMessage(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
+    }
+  };
+
+  const uploadPhotos = async () => {
+    if (files.length === 0) return [];
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    
+    const response = await fetch('https://api.landmark-api.com/api/v1/contribution/submit-photo', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error('Failed to upload photos');
+    const result = await response.json();
+    return result.urls;
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-[#0A0B1A] text-gray-100">
+      <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <MapPin className="mx-auto h-12 w-12 text-purple-400" />
-          <h2 className="mt-2 text-3xl font-extrabold">Submit a New Landmark</h2>
-          <p className="mt-2 text-sm text-gray-300">Share your favorite landmarks with the community</p>
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 inline-block p-3 rounded-lg mb-4">
+            <MapPin className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Submit New Landmark
+          </h1>
+          <p className="mt-2 text-gray-400">Share your favorite landmarks with our global community</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-gray-800 p-6 rounded-lg shadow-xl">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name" className="text-gray-300">Landmark Name</Label>
-              <Input id="name" {...register('name')} className="bg-gray-700 text-white border-gray-600" />
-              {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
-            </div>
-
-            <div>
-              <Label htmlFor="description" className="text-gray-300">Description</Label>
-              <Textarea id="description" {...register('description')} className="bg-gray-700 text-white border-gray-600" />
-              {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description.message}</p>}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <div className="bg-[#131325] rounded-xl p-6 shadow-xl border border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Info className="h-5 w-5 text-blue-400" />
+              Basic Information
+            </h2>
+            <div className="grid gap-6">
               <div>
-                <Label htmlFor="latitude" className="text-gray-300">Latitude</Label>
-                <Input id="latitude" type="number" step="any" {...register('latitude', { valueAsNumber: true })} className="bg-gray-700 text-white border-gray-600" />
-                {errors.latitude && <p className="text-red-400 text-sm mt-1">{errors.latitude.message}</p>}
-              </div>
-              <div>
-                <Label htmlFor="longitude" className="text-gray-300">Longitude</Label>
-                <Input id="longitude" type="number" step="any" {...register('longitude', { valueAsNumber: true })} className="bg-gray-700 text-white border-gray-600" />
-                {errors.longitude && <p className="text-red-400 text-sm mt-1">{errors.longitude.message}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="country" className="text-gray-300">Country</Label>
-                <Input id="country" {...register('country')} className="bg-gray-700 text-white border-gray-600" />
-                {errors.country && <p className="text-red-400 text-sm mt-1">{errors.country.message}</p>}
-              </div>
-              <div>
-                <Label htmlFor="city" className="text-gray-300">City</Label>
-                <Input id="city" {...register('city')} className="bg-gray-700 text-white border-gray-600" />
-                {errors.city && <p className="text-red-400 text-sm mt-1">{errors.city.message}</p>}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="category" className="text-gray-300">Category</Label>
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <SelectTrigger className="bg-gray-700 text-white border-gray-600">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 text-white border-gray-600">
-                      <SelectItem value="Historical Landmark">Historical Landmark</SelectItem>
-                      <SelectItem value="Natural Wonder">Natural Wonder</SelectItem>
-                      <SelectItem value="Cultural Site">Cultural Site</SelectItem>
-                      <SelectItem value="Architectural Marvel">Architectural Marvel</SelectItem>
-                      <SelectItem value="Religious Site">Religious Site</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <Label className="text-gray-300">Landmark Name</Label>
+                <Input
+                  {...register('name')}
+                  className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                />
+                {errors.name && (
+                  <p className="mt-1 text-red-400 text-sm">{errors.name.message}</p>
                 )}
-              />
-              {errors.category && <p className="text-red-400 text-sm mt-1">{errors.category.message}</p>}
-            </div>
+              </div>
 
-            <div>
-              <Label className="text-gray-300">Opening Hours</Label>
-              {days.map((day) => (
-                <div key={day} className="flex items-center space-x-2 mt-2">
-                  <span className="w-24 text-gray-300">{day}</span>
-                  <Input {...register(`opening_hours.${day}`)} defaultValue="9:00 AM - 5:00 PM" className="bg-gray-700 text-white border-gray-600" />
+              <div>
+                <Label className="text-gray-300">Description</Label>
+                <Textarea
+                  {...register('description')}
+                  className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                  rows={4}
+                />
+                {errors.description && (
+                  <p className="mt-1 text-red-400 text-sm">{errors.description.message}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-300">Latitude</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    {...register('latitude', { valueAsNumber: true })}
+                    className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                  />
+                  {errors.latitude && (
+                    <p className="mt-1 text-red-400 text-sm">{errors.latitude.message}</p>
+                  )}
                 </div>
-              ))}
-              {errors.opening_hours && <p className="text-red-400 text-sm mt-1">Please provide valid opening hours for all days</p>}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="adultPrice" className="text-gray-300">Adult Ticket Price</Label>
-                <Input id="adultPrice" {...register('ticket_prices.Adult')} className="bg-gray-700 text-white border-gray-600" />
-                {errors.ticket_prices?.Adult && <p className="text-red-400 text-sm mt-1">{errors.ticket_prices.Adult.message}</p>}
+                <div>
+                  <Label className="text-gray-300">Longitude</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    {...register('longitude', { valueAsNumber: true })}
+                    className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                  />
+                  {errors.longitude && (
+                    <p className="mt-1 text-red-400 text-sm">{errors.longitude.message}</p>
+                  )}
+                </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-300">Country</Label>
+                  <Input
+                    {...register('country')}
+                    className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                  />
+                  {errors.country && (
+                    <p className="mt-1 text-red-400 text-sm">{errors.country.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label className="text-gray-300">City</Label>
+                  <Input
+                    {...register('city')}
+                    className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                  />
+                  {errors.city && (
+                    <p className="mt-1 text-red-400 text-sm">{errors.city.message}</p>
+                  )}
+                </div>
+              </div>
+
               <div>
-                <Label htmlFor="childPrice" className="text-gray-300">Child Ticket Price</Label>
-                <Input id="childPrice" {...register('ticket_prices.Child')} className="bg-gray-700 text-white border-gray-600" />
-                {errors.ticket_prices?.Child && <p className="text-red-400 text-sm mt-1">{errors.ticket_prices.Child.message}</p>}
+                <Label className="text-gray-300">Category</Label>
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="mt-1 bg-[#1A1A2E] border-gray-700">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="historical">Historical</SelectItem>
+                        <SelectItem value="cultural">Cultural</SelectItem>
+                        <SelectItem value="natural">Natural</SelectItem>
+                        <SelectItem value="religious">Religious</SelectItem>
+                        <SelectItem value="architectural">Architectural</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.category && (
+                  <p className="mt-1 text-red-400 text-sm">{errors.category.message}</p>
+                )}
               </div>
             </div>
-
-            <div>
-              <Label htmlFor="historical_significance" className="text-gray-300">Historical Significance</Label>
-              <Textarea id="historical_significance" {...register('historical_significance')} className="bg-gray-700 text-white border-gray-600" />
-              {errors.historical_significance && <p className="text-red-400 text-sm mt-1">{errors.historical_significance.message}</p>}
-            </div>
-
-            <div>
-              <Label htmlFor="visitor_tips" className="text-gray-300">Visitor Tips</Label>
-              <Textarea id="visitor_tips" {...register('visitor_tips')} className="bg-gray-700 text-white border-gray-600" />
-              {errors.visitor_tips && <p className="text-red-400 text-sm mt-1">{errors.visitor_tips.message}</p>}
-            </div>
-
-            <div>
-              <Label htmlFor="accessibility_info" className="text-gray-300">Accessibility Information</Label>
-              <Input id="accessibility_info" {...register('accessibility_info')} className="bg-gray-700 text-white border-gray-600" />
-              {errors.accessibility_info && <p className="text-red-400 text-sm mt-1">{errors.accessibility_info.message}</p>}
-            </div>
-
-            <div>
-            <Label htmlFor="photos" className="text-gray-300">Photos</Label>
-            <Input id="photos" type="file" multiple accept="image/*" onChange={handleFileChange} className="bg-gray-700 text-white border-gray-600" />
           </div>
 
+          <div className="bg-[#131325] rounded-xl p-6 shadow-xl border border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Clock className="h-5 w-5 text-purple-400" />
+              Operating Hours & Prices
+            </h2>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                {days.map((day) => (
+                  <div key={day} className="grid grid-cols-4 gap-4 items-center">
+                    <Label className="text-gray-400">{day}</Label>
+                    <Input
+                      {...register(`opening_hours.${day}`)}
+                      className="col-span-3 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-300 flex items-center gap-2">
+                  <Ticket className="h-5 w-5 text-purple-400" />
+                  Ticket Prices
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-gray-400">Adult Price</Label>
+                    <Input
+                      {...register('ticket_prices.Adult')}
+                      className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-400">Child Price</Label>
+                    <Input
+                      {...register('ticket_prices.Child')}
+                      className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#131325] rounded-xl p-6 shadow-xl border border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <History className="h-5 w-5 text-blue-400" />
+              Additional Information
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <Label className="text-gray-300">Historical Significance</Label>
+                <Textarea
+                  {...register('historical_significance')}
+                  className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                  rows={4}
+                />
+                {errors.historical_significance && (
+                  <p className="mt-1 text-red-400 text-sm">{errors.historical_significance.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label className="text-gray-300">Visitor Tips</Label>
+                <Textarea
+                  {...register('visitor_tips')}
+                  className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                  rows={4}
+                />
+                {errors.visitor_tips && (
+                  <p className="mt-1 text-red-400 text-sm">{errors.visitor_tips.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label className="text-gray-300">Accessibility Information</Label>
+                <Textarea
+                  {...register('accessibility_info')}
+                  className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                  rows={3}
+                />
+                {errors.accessibility_info && (
+                  <p className="mt-1 text-red-400 text-sm">{errors.accessibility_info.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label className="text-gray-300">Photos</Label>
+                <Input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="mt-1 bg-[#1A1A2E] border-gray-700 focus:border-blue-500"
+                />
+              </div>
+            </div>
           </div>
 
           <AnimatePresence>
@@ -250,49 +335,32 @@ export default function LandmarkSubmissionForm() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
               >
-                <Alert variant="default" className="bg-green-800 text-white border-green-600">
-                  <CheckCircle2 className="h-4 w-4" />
+                <Alert className="bg-green-900/50 border-green-500">
+                  <CheckCircle2 className="h-4 w-4 text-green-400" />
                   <AlertTitle>Success</AlertTitle>
-                  <AlertDescription>
-                    Your landmark submission has been received. Thank you for your contribution!
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
-
-            {submitStatus === 'error' && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Alert variant="destructive" className="bg-red-800 text-white border-red-600">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>
-                    {errorMessage || 'There was an error submitting your landmark. Please try again.'}
-                  </AlertDescription>
+                  <AlertDescription>Your landmark has been submitted successfully!</AlertDescription>
                 </Alert>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={isSubmitting} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-6"
+          >
             {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Submitting...
-              </>
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Submitting...</span>
+              </div>
             ) : (
               'Submit Landmark'
             )}
           </Button>
         </form>
       </div>
-    
     </div>
-  )
+  );
 }
