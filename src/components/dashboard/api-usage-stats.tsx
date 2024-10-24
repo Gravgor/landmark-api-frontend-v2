@@ -28,7 +28,6 @@ const StatsCard = ({ title, value, icon: Icon, gradient, children, action, subti
 
 const APIUsageStats = ({ usageLoading, apiUsage }:any) => {
   const [timeUntilReset, setTimeUntilReset] = useState('');
-  
   useEffect(() => {
     const calculateTimeUntilReset = () => {
       const now = new Date();
@@ -53,6 +52,21 @@ const APIUsageStats = ({ usageLoading, apiUsage }:any) => {
     return () => clearInterval(interval);
   }, []);
 
+  if (usageLoading) {
+    return (
+        <div className="bg-[#0D0E23] rounded-xl p-6 border border-blue-500/20">
+            <div className="animate-pulse space-y-4">
+              <div className="flex justify-between">
+                <div className="h-4 w-24 bg-gray-700 rounded"></div>
+                <div className="h-6 w-6 bg-gray-700 rounded"></div>
+              </div>
+              <div className="h-6 w-32 bg-gray-700 rounded"></div>
+              <div className="h-2 w-full bg-gray-700 rounded"></div>
+            </div>
+          </div>
+    )
+  }
+
   return (
     <StatsCard
       title="API Usage"
@@ -62,7 +76,7 @@ const APIUsageStats = ({ usageLoading, apiUsage }:any) => {
       subtitle={
         <div className="flex items-center gap-1 mt-1">
           <Clock className="h-3 w-3 text-gray-400" />
-          <span>Resets in {timeUntilReset}</span>
+          <span>Resets on {apiUsage.periodEnd}</span>
         </div>
       }
     >
