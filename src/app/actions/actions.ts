@@ -9,6 +9,7 @@ export async function createAccount(formData: FormData) {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
   const plan = formData.get("plan") as Plan
+  const cookie = await cookies()
 
   try {
     // 1. Create user account
@@ -31,7 +32,7 @@ export async function createAccount(formData: FormData) {
 
     // 2. Encrypt and store credentials in cookies
     const encryptedCredentials = await encrypt(JSON.stringify({ email, password }))
-    cookies().set('temp_credentials', encryptedCredentials, { 
+    cookie.set('temp_credentials', encryptedCredentials, { 
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -74,9 +75,10 @@ export async function createAccount(formData: FormData) {
 }
 
 export async function loginAfterRedirect() {
+  const cookie = await cookies()
     try {
       // 1. Retrieve and decrypt the stored credentials
-      const encryptedCredentials = cookies().get('temp_credentials')?.value
+      const encryptedCredentials = cookie.get('temp_credentials')?.value
       if (!encryptedCredentials) {
         throw new Error("No credentials found")
       }
@@ -100,7 +102,7 @@ export async function loginAfterRedirect() {
       const { token } = loginData
   
       // 3. Set the authentication token as a cookie
-      cookies().set('auth_token', token, { 
+      cookie.set('auth_token', token, { 
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
