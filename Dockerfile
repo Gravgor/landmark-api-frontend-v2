@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install dependencies with --force flag
-RUN npm install
+RUN npm install --force
 
 # Rebuild the source code only when needed
 FROM base AS builder
