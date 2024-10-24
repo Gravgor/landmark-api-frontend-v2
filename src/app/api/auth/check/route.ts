@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 export async function GET() {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const token = cookieStore.get('auth_token')
 
   if (!token) {
@@ -10,7 +10,7 @@ export async function GET() {
   }
 
   try {
-    // Validate token with your backend
+    // Validate token with backend
     const response = await fetch(`${process.env.API_URL}user/api/v1/validate-token`, {
       method: 'GET',
       headers: {
