@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 
 export async function POST(request: Request) {
   const body = await request.json()
+  const cookie = await cookies()
   const { email, password } = body
 
   try {
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
     const { token } = data
 
     // Set the token in an HTTP-only cookie
-    cookies().set('auth_token', token, { 
+    cookie.set('auth_token', token, { 
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
