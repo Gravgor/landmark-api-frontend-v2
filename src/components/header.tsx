@@ -38,7 +38,7 @@ const navItems = [
   },
   { 
     name: "Resources",
-    icon: <Book className="w-4 h-4 ml-1" />,
+    icon: <Book className="w-4 h-4 mr-2" />,
     href: "#resources",
     subItems: [
       { name: "Documentation", href: "/docs" },
