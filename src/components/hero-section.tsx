@@ -378,7 +378,7 @@ export default function Hero() {
     setShouldKeepShowing(false);
     if (e.key === "Enter") {
       e.preventDefault();
-      handleSearch(searchTerm);
+      handleFromSuggestion(searchTerm);
       resetInactivityTimer();
     } else if (e.key === "Tab") {
       e.preventDefault();
