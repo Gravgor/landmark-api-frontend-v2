@@ -1,7 +1,7 @@
 //@ts-nocheck
 "use client"
 import Link from "next/link"
-import { MapPin, Menu, X, User, Search, ChevronDown, Globe, Database, Zap } from "lucide-react"
+import { MapPin, Menu, X, User, Search, ChevronDown, Globe, Database, Zap, Book } from "lucide-react"
 import { motion } from "framer-motion"
 
 import { Button } from "@/components/ui/button"
@@ -38,7 +38,7 @@ const navItems = [
   },
   { 
     name: "Resources",
-    icon: <ChevronDown className="w-4 h-4 ml-1" />,
+    icon: <Book className="w-4 h-4 ml-1" />,
     href: "#resources",
     subItems: [
       { name: "Documentation", href: "/docs" },
