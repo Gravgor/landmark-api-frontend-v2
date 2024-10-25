@@ -108,7 +108,7 @@ function MainNav() {
           transition={{ delay: 0.2 }}
         >
           <span className="font-bold text-xl text-white">Landmark API</span>
-          <span className="text-xs text-blue-300">1000+ active users</span>
+          <span className="text-xs text-blue-300">10000+ landmarks</span>
         </motion.div>
       </Link>
       <NavigationMenu className="hidden md:flex ml-8">
