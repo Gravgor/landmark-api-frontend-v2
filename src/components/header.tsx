@@ -131,7 +131,7 @@ function MainNav() {
                               className="flex items-center space-x-4 rounded-lg p-3 hover:bg-white/5 transition-colors"
                             >
                               {subItem.icon && (
-                                <div className="bg-blue-500/10 p-2 rounded-lg">
+                                <div className="bg-blue-500 p-2 rounded-lg">
                                   {subItem.icon}
                                 </div>
                               )}
