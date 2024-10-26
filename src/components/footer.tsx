@@ -59,7 +59,7 @@ export default function Footer() {
               <li><FooterLink href="#features">Features</FooterLink></li>
               <li><FooterLink href="/pricing">Pricing</FooterLink></li>
               <li><FooterLink href="/documentation">Documentation</FooterLink></li>
-              <li><FooterLink href="/changelog">Changelog</FooterLink></li>
+              <li><FooterLink href="/docs">Changelog</FooterLink></li>
               <li><FooterLink href="/integrations">Integrations</FooterLink></li>
             </ul>
           </div>

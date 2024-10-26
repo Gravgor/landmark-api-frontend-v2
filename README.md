@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# Landmark API Frontend v2
 
-First, run the development server:
+![Landmark API Frontend v2](https://img.shields.io/badge/version-alpha%201.0-blue)
+![Status](https://img.shields.io/badge/status-active-green)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This project is the frontend for the Landmark API, an application that provides real-time data on landmarks across the globe. Built with **Next.js** and **React**, it provides an intuitive and responsive interface for accessing detailed landmark information, including images, historical data, and live updates. This frontend interacts with the backend [Landmark API](https://github.com/Gravgor/landmark-api) and supports multiple user access levels with detailed landmark data and real-time features.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Table of Contents
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
+- [License](#license)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Detailed Landmark Information:** Access historical, geographical, and visitor information.
+- **Real-time Data:** View live updates like weather, crowd size, and public transport.
+- **Responsive Design:** Optimized for various devices and screen sizes.
+- **Image Storage via AWS S3:** Displays multiple images per landmark.
+- **User Authentication:** Secure access through API keys for registered users.
+- **Role-based Access Control:** Different access levels for Free, Pro, and Enterprise users.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Screenshots
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<!-- Include screenshots here -->
+<!-- Example: ![Landing Page](./screenshots/landing-page.png) -->
+![Landing Page](./screenshots/landing-page.png)
 
-## Deploy on Vercel
+![Features](./screenshots/features.png)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![Auth page](./screenshots/auth.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+![Dashboard](./screenshots/image.png)
+
+
+
+## Installation
+
+To run this project locally:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Gravgor/landmark-api-frontend-v2.git
+   cd landmark-api-frontend-v2
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**  
+   Create a `.env.local` file in the root directory and add the following:
+
+   ```bash
+   NEXT_PUBLIC_API_URL=your_api_url
+   NEXT_PUBLIC_S3_BUCKET_URL=your_s3_bucket_url
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. Open your browser and navigate to `http://localhost:3000`.
+
+## Usage
+
+This project provides a user-friendly interface for accessing the Landmark API. Some key user interactions include:
+
+- **Search and Browse:** Find landmarks using filters like categories, location, and historical events.
+- **View Detailed Information:** Check landmark data, including real-time updates.
+- **User Account Access:** Log in to access personalized dashboard features.
+
+## Configuration
+
+To use all features, configure access to the [Landmark API](https://github.com/Gravgor/landmark-api) backend. Set up the API to include the necessary authentication, data sources, and environment variables.
+
+### Environment Variables
+
+- **NEXT_PUBLIC_API_URL:** The base URL for your backend Landmark API.
+- **NEXT_PUBLIC_S3_BUCKET_URL:** The AWS S3 bucket URL for landmark images.
+
+## Contributing
+
+We welcome contributions! Here’s how you can help:
+
+1. **Fork the repository** and create your branch from `main`.
+2. **Clone your forked repo** and make changes.
+3. **Submit a pull request** with a clear description of your changes.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
