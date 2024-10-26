@@ -519,14 +519,8 @@ export default function Hero() {
                 >
                   <div className="space-y-4">
                     <div className="flex justify-center space-x-4 mb-6">
-                      {["Go", "PostgreSQL", "Redis", "Next.js"].map((tech) => (
-                        <Badge
-                          key={tech}
-                          className="px-3 py-1 text-white bg-slate-700/50"
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
+                    <a href="https://www.producthunt.com/posts/landmark-api?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-landmark&#0045;api" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=539592&theme=dark" alt="Landmark&#0032;API - Discover&#0032;the&#0032;world&#0039;s&#0032;landmarks | Product Hunt" className="w-[250px] h-[54px]" /></a>
+
                     </div>
                     <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-none tracking-tight">
                       Global Landmark
