@@ -34,6 +34,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { debounce } from "lodash";
 
 interface Image {
   image_url: string;
@@ -399,7 +400,13 @@ export default function Hero() {
   };
 
   useEffect(() => {
-    fetchSuggestions(searchTerm, searchType);
+    const debouncedFetch = debounce(() => {
+      fetchSuggestions(searchTerm, searchType);
+    }, 300);
+  
+    debouncedFetch();
+  
+    return () => debouncedFetch.cancel();
   }, [searchTerm, searchType, fetchSuggestions]);
 
   useEffect(() => {

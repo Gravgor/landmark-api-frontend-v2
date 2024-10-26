@@ -1,6 +1,5 @@
-import { debounce } from "lodash";
 import { Building, Globe, MapPin } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { TbCategory } from "react-icons/tb";
 
 type SearchType = 'city' | 'country' | 'category' | 'name';
@@ -23,45 +22,35 @@ interface Suggestions {
 }
 
 export const useLandmarkSuggestions = () => {
-  const [suggestions, setSuggestions] = useState<Suggestions>({
-    results: []
-  });
+  const [suggestions, setSuggestions] = useState<Suggestions>({ results: [] });
   const [loading, setIsLoading] = useState(false);
   const [err, setError] = useState<string | null>(null);
   
-  // Use a ref to track if a suggestion was recently selected
   const selectedRef = useRef(false);
-  // Use a ref to store the current abort controller
   const abortControllerRef = useRef<AbortController | null>(null);
+  const searchedTerms: Set<string> = useRef(new Set<string>()).current;
 
-  // Reset function to clear the selected state after a delay
-  const resetSelected = debounce(() => {
-    selectedRef.current = false;
-  }, 500);
-
-  // Function to mark a suggestion as selected
-  const markAsSelected = () => {
+  const markAsSelected = useCallback(() => {
     selectedRef.current = true;
-    resetSelected();
-  };
+    setTimeout(() => {
+      selectedRef.current = false;
+    }, 500);
+  }, []);
 
   const fetchSuggestions = async (searchTerm: string, searchType: SearchType) => {
-    // Don't fetch if a suggestion was recently selected
-    if (selectedRef.current || !searchTerm) {
-      setSuggestions({ results: [] });
+    if (searchedTerms.has(searchTerm) || selectedRef.current) {
       return;
     }
 
-    // Cancel any ongoing requests
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Create new abort controller for this request
     abortControllerRef.current = new AbortController();
-
     setIsLoading(true);
     setError(null);
+
+    searchedTerms.add(searchTerm);
 
     try {
       const response = await fetch(
@@ -70,7 +59,7 @@ export const useLandmarkSuggestions = () => {
           headers: {
             "x-api-key": "43f79790-bc83-47a5-ad99-ee965c27bc34",
           },
-          signal: abortControllerRef.current.signal
+          signal: abortControllerRef.current.signal,
         }
       );
 
@@ -79,7 +68,6 @@ export const useLandmarkSuggestions = () => {
       const data = await response.json();
       setSuggestions(data);
     } catch (error) {
-      // Only set error if it's not an abort error
       if (error instanceof Error && error.name !== 'AbortError') {
         setError(error.message);
       }
@@ -88,7 +76,6 @@ export const useLandmarkSuggestions = () => {
     }
   };
 
-  // Cleanup function
   useEffect(() => {
     return () => {
       if (abortControllerRef.current) {
@@ -97,13 +84,11 @@ export const useLandmarkSuggestions = () => {
     };
   }, []);
 
-  const debouncedFetch = debounce(fetchSuggestions, 300);
-
   return {
     suggestions,
     loading,
     err,
-    fetchSuggestions: debouncedFetch,
-    markAsSelected, // Expose the function to mark a suggestion as selected
+    fetchSuggestions,
+    markAsSelected,
   };
 };
