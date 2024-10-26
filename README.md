@@ -37,9 +37,13 @@ This project is the frontend for the Landmark API, an application that provides 
 
 ![Auth page](./screenshots/auth.png)
 
-![Dashboard](./screenshots/image.png)
+![Dashboard](./screenshots/dashboard.png)
 
+![Landmark Search](./screenshots/search.png)
 
+![Landmark Grid](./screenshots/grid.png)
+
+![Landmark Modal](./screenshots/image.png)
 
 ## Installation
 
