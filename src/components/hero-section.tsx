@@ -319,7 +319,7 @@ export default function Hero() {
         setIsLoading(true);
         setError(null);
         try {
-          const endpoint = `/landmarks/${searchType}/${encodeURIComponent(
+          const endpoint = `/suggestions/landmarks/${searchType}/${encodeURIComponent(
             query
           )}?offset=${offsetValue}&limit=10`;
           const response = await fetch(
