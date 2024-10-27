@@ -58,9 +58,6 @@ export function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <MainNav />
-          <div className="ml-auto md:hidden">
-            <MobileNav />
-          </div>
           <div className="flex flex-1 items-center justify-end space-x-4">
             <div className="w-full flex-1 md:w-auto md:flex-none">
               <CommandMenu />
@@ -83,6 +80,9 @@ export function Navbar() {
                 </Button>
               </Link>
             </nav>
+            <div className="md:hidden">
+              <MobileNav />
+            </div>
           </div>
         </div>
       </div>

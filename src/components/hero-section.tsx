@@ -35,6 +35,11 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { debounce } from "lodash";
+import AnimatedBackground from "./hero/animated-background";
+import InteractiveMap from "./hero/interactive-map";
+import AnimatedCounter from "./hero/animated-counter";
+import EnhancedCTAButton from "./hero/enhanced-button";
+import AnimatedCityscape from "./animated-cityscape";
 
 interface Image {
   image_url: string;
@@ -501,6 +506,7 @@ export default function Hero() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+
       <main className="flex-grow">
         <motion.section
           className="relative min-h-screen flex items-center justify-center overflow-hidden py-20 sm:py-32"
@@ -509,6 +515,7 @@ export default function Hero() {
           exit={{ opacity: 0 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
         >
+          <AnimatedCityscape />
           {/* Tech-focused background pattern */}
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(24,24,27,0.7),rgba(24,24,27,0.9))]" />
@@ -525,24 +532,18 @@ export default function Hero() {
                   exit={{ opacity: 0, y: -20 }}
                 >
                   <div className="space-y-4">
-                    <div className="flex justify-center space-x-4 mb-6">
-                    <a href="https://www.producthunt.com/posts/landmark-api?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-landmark&#0045;api" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=539592&theme=dark" alt="Landmark&#0032;API - Discover&#0032;the&#0032;world&#0039;s&#0032;landmarks | Product Hunt" className="w-[250px] h-[54px]" /></a>
-
-                    </div>
+                    
                     <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-none tracking-tight">
-                      Global Landmark
+                     Discover the World's Landmarks
                       <br />
                       <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                        Data API
+                       Landmarks
                       </span>
                     </h1>
                     <p className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-400 mt-6">
-                      Access comprehensive landmark data through our
-                      high-performance API. Serving 10,000+ daily requests with
-                      99.99% uptime.
+                      Access global landmark data with our powerful RESTful API service. Build for developers, by developers.
                     </p>
                   </div>
-
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
                     <div className="p-6 rounded-lg bg-slate-800/50 backdrop-blur-sm border border-slate-700">
                       <Database className="h-8 w-8 text-blue-400 mb-4" />
@@ -575,17 +576,10 @@ export default function Hero() {
 
                   <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-12">
                     <Link href="#pricing">
-                      <Button className="w-full sm:w-auto text-lg px-8 py-3 bg-blue-500 hover:bg-blue-600">
-                        Get API Key
-                      </Button>
+                      <EnhancedCTAButton text="Get API Key" />
                     </Link>
                     <Link href="/docs">
-                      <Button
-                        variant="outline"
-                        className="w-full sm:w-auto text-lg px-8 py-3 border-slate-700 hover:bg-slate-800"
-                      >
-                        View Docs
-                      </Button>
+                      <EnhancedCTAButton text="View Docs" variant="secondary" />
                     </Link>
                   </div>
                 </motion.div>

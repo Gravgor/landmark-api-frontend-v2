@@ -35,7 +35,7 @@
     "lucide-react": "^0.451.0",
     "negotiator": "^1.0.0",
     "next": "^15.0.1",
-    "react": "^18.3.1",
+    "react": "^19.0.0-rc-cae764ce-20241025",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
     "react-icons": "^5.3.0",
@@ -46,7 +46,8 @@
     "stripe": "^17.2.0",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.11",
@@ -54,6 +55,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/zxcvbn": "^4.4.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
     "postcss": "^8",
