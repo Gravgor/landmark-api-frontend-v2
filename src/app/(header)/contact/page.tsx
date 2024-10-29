@@ -1,5 +1,8 @@
 'use client'
 import React, { useState } from 'react'
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -7,21 +10,64 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Phone, Mail, Globe, MessageSquare, Clock, Building2 } from "lucide-react"
+import { Toast } from "@/components/ui/toast";
+import { toast } from '@/hooks/use-toast';
+
+const contactSchema = z.object({
+  name: z.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name must be less than 50 characters'),
+  email: z.string()
+    .email('Invalid email address')
+    .min(5, 'Email is required'),
+  subject: z.string()
+    .min(1, 'Subject is required')
+    .max(100, 'Subject must be less than 100 characters'),
+  message: z.string()
+    .min(10, 'Message must be at least 10 characters')
+    .max(1000, 'Message must be less than 1000 characters'),
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function ContactPage() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [subject, setSubject] = useState('')
-  const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e:any) => {
-    e.preventDefault()
-    console.log('Form submitted:', { name, email, subject, message })
-    setName('')
-    setEmail('')
-    setSubject('')
-    setMessage('')
-  }
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema)
+  });
+
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error('Failed to send message');
+
+      toast({
+        title: "Success",
+        description: "Your message has been sent successfully!",
+      });
+      reset();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const officeLocations = [
     { city: "San Francisco", address: "123 Tech Street, San Francisco, CA 94105", phone: "+1 (415) 555-0123" },
@@ -60,59 +106,58 @@ export default function ContactPage() {
           {/* Contact Form */}
           <Card className="bg-[#141625] border-gray-800">
             <CardContent className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Name</label>
                   <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="bg-[#1C1F2E] border-gray-700"
-                    placeholder="Your name"
-                    required
+                    {...register("name")}
+                    placeholder="Your Name"
+                    className={errors.name ? "border-red-500" : ""}
                   />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                  )}
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
                   <Input
+                    {...register("email")}
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-[#1C1F2E] border-gray-700"
-                    placeholder="you@company.com"
-                    required
+                    placeholder="Your Email"
+                    className={errors.email ? "border-red-500" : ""}
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Subject</label>
-                  <Select onValueChange={setSubject}>
-                    <SelectTrigger className="bg-[#1C1F2E] border-gray-700">
-                      <SelectValue placeholder="Select a subject" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="general">General Inquiry</SelectItem>
-                      <SelectItem value="support">Technical Support</SelectItem>
-                      <SelectItem value="sales">Sales Question</SelectItem>
-                      <SelectItem value="demo">Request a Demo</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    {...register("subject")}
+                    placeholder="Subject"
+                    className={errors.subject ? "border-red-500" : ""}
+                  />
+                  {errors.subject && (
+                    <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Message</label>
                   <Textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    className="bg-[#1C1F2E] border-gray-700"
-                    placeholder="How can we help?"
-                    rows={5}
-                    required
+                    {...register("message")}
+                    placeholder="Your Message"
+                    className={errors.message ? "border-red-500" : ""}
                   />
+                  {errors.message && (
+                    <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>
+                  )}
                 </div>
 
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                  Send Message
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
               </form>
             </CardContent>

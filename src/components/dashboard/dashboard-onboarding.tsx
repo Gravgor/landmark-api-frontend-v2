@@ -140,6 +140,7 @@ export default function LightOnboardingFlow() {
     },
   ]
 
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <Card className="w-full max-w-md border border-gray-200 shadow-lg">
