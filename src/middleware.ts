@@ -11,7 +11,27 @@ export async function middleware(request: NextRequest) {
   headers.set('X-XSS-Protection', '1; mode=block');
   headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.landmark-api.com;"
+    [
+      "default-src 'self'",
+      // Scripts
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://js.stripe.com",
+      // Styles
+      "style-src 'self' 'unsafe-inline'",
+      // Images
+      "img-src 'self' data: https:",
+      // Fonts
+      "font-src 'self' data:",
+      // Connect (for API calls)
+      "connect-src 'self' https://api.landmark-api.com https://js.stripe.com",
+      // Frames (for Stripe)
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+      // Form actions
+      "form-action 'self'",
+      // Media
+      "media-src 'self'",
+      // Object sources
+      "object-src 'none'",
+    ].join('; ')
   );
   headers.set('X-Content-Type-Options', 'nosniff');
   headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
