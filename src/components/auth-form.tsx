@@ -16,9 +16,8 @@ import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "@/hooks/use-auth";
 import zxcvbn from "zxcvbn";
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!}`);
+
 
 const SubmitButton = ({ pending, children }: any) => (
   <motion.button
