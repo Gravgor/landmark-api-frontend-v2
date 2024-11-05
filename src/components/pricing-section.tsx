@@ -1,5 +1,5 @@
 "use client"
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, FormEvent } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Check, X, User, Mail, Lock, Zap, Shield, Cloud, Clock, Database, HeartHandshake } from "lucide-react";
@@ -150,23 +150,40 @@ const PlanCard = ({ plan, index, onSelectPlan }: { plan: typeof plans[0], index:
   );
 };
 
+interface SignUpData {
+  email: string;
+  password: string;
+  name: string;
+}
+
 const SignUpModal = ({ 
   isOpen, 
   onClose, 
   selectedPlan,
   onSubmit,
-  isLoading 
+  isLoading,
+  formData,
+  onFormChange
 }: { 
   isOpen: boolean;
   onClose: () => void;
   selectedPlan: string | null;
-  onSubmit: (e: React.FormEvent) => Promise<void>;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
   isLoading: boolean;
+  formData: SignUpData;
+  onFormChange: (name: string, value: string) => void;
 }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    if (id === 'name') setName(value);
+    else if (id === 'email') setEmail(value);
+    else if (id === 'password') setPassword(value);
+    onFormChange(id, value);
+  };
   return (
     <AnimatePresence>
       {isOpen && (
@@ -198,7 +215,7 @@ const SignUpModal = ({
                     id="name"
                     type="text"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={handleInputChange}
                     className="pl-10 bg-gray-800 border-gray-700"
                     required
                   />
@@ -212,7 +229,7 @@ const SignUpModal = ({
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleInputChange}
                     className="pl-10 bg-gray-800 border-gray-700"
                     required
                   />
@@ -226,7 +243,7 @@ const SignUpModal = ({
                     id="password"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handleInputChange}
                     className="pl-10 bg-gray-800 border-gray-700"
                     required
                   />
@@ -252,6 +269,12 @@ export default function PricingSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    plan: 'free',
+  });
   
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -259,17 +282,18 @@ export default function PricingSection() {
     offset: ["start end", "end start"]
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage('');
-
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    formData.append('plan', selectedPlan?.toLowerCase() || 'free');
+    const submitData = new FormData()
+    submitData.append('name', formData.name)
+    submitData.append('email', formData.email)
+    submitData.append('password', formData.password)
+    submitData.append('plan', selectedPlan?.toLowerCase() || 'free')
 
     try {
-      const result = await createAccount(formData);
+      const result = await createAccount(submitData);
 
       if (result.success) {
         const stripe = await stripePromise;
@@ -298,6 +322,12 @@ export default function PricingSection() {
     setIsModalOpen(true);
   }, []);
 
+  const handleFormChange = (name: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
   const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
   const y = useTransform(scrollYProgress, [0, 0.2], [100, 0]);
 
@@ -358,6 +388,8 @@ export default function PricingSection() {
         selectedPlan={selectedPlan}
         onSubmit={handleSubmit}
         isLoading={isLoading}
+        formData={formData}
+        onFormChange={handleFormChange}
       />
     </section>
   );

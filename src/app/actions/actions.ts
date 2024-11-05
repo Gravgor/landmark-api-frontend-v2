@@ -5,12 +5,13 @@ import { cookies } from "next/headers"
 type Plan = "free" | "pro"
 
 export async function createAccount(formData: FormData) {
+  console.log(formData)
   const name = formData.get("name") as string
   const email = formData.get("email") as string
   const password = formData.get("password") as string
-  const plan = formData.get("plan") as Plan
+  const plan = formData.get("plan") as string
   const cookie = await cookies()
-
+  console.log(name, email, password, plan)
   try {
     // 1. Create user account
     const createAccountResponse = await fetch(
@@ -23,7 +24,6 @@ export async function createAccount(formData: FormData) {
         body: JSON.stringify({ name, email, password, plan }),
       }
     )
-
     if (!createAccountResponse.ok) {
       throw new Error("Failed to create account")
     }
@@ -54,7 +54,6 @@ export async function createAccount(formData: FormData) {
         body: JSON.stringify({ userID, planType, plan }),
       }
     )
-    console.log(stripeResponse)
     if (!stripeResponse.ok) {
       throw new Error("Failed to create Stripe checkout session")
     }

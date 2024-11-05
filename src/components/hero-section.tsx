@@ -534,7 +534,7 @@ export default function Hero() {
                   <div className="space-y-4">
                     
                     <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-none tracking-tight">
-                     Discover the World's Landmarks
+                     Discover the World's
                       <br />
                       <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                        Landmarks
