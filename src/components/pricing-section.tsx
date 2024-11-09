@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createAccount } from '@/app/actions/actions';
 
-const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!}`);
 
 const plans = [
   {
@@ -296,7 +295,7 @@ export default function PricingSection() {
       const result = await createAccount(submitData);
 
       if (result.success) {
-        const stripe = await stripePromise;
+        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
         if (!stripe) {
           throw new Error('Stripe failed to initialize');
         }
